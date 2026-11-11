@@ -1,0 +1,2397 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏛️ GAME REBUTAN KEKUASAAN: PEMERINTAHAN TEKNOLOGI 2045</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Space Grotesk & Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        cyber: {
+                            900: '#070B19',
+                            800: '#0F172A',
+                            700: '#1E293B',
+                            gold: '#F59E0B',
+                            neon: '#06B6D4',
+                            pink: '#EC4899',
+                            lime: '#10B981'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background: radial-gradient(circle at top center, #1e293b 0%, #070b19 100%);
+            min-height: 100vh;
+            color: #f8fafc;
+            overflow-x: hidden;
+        }
+
+        /* Custom Futuristic Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #06b6d4;
+        }
+
+        /* Buzzer 3D Button Styling */
+        .buzzer-btn {
+            transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 0 rgba(0, 0, 0, 0.45), 0 12px 20px rgba(0, 0, 0, 0.4);
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .buzzer-btn:active:not(:disabled), .buzzer-btn.pressed {
+            transform: translateY(6px);
+            box-shadow: 0 2px 0 rgba(0, 0, 0, 0.45), 0 4px 8px rgba(0, 0, 0, 0.4);
+        }
+        .buzzer-btn:disabled {
+            opacity: 0.45;
+            filter: grayscale(65%);
+            cursor: not-allowed;
+        }
+
+        /* Active Responder Glow Animation */
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(245, 158, 11, 0.6), inset 0 0 15px rgba(245, 158, 11, 0.3); }
+            50% { box-shadow: 0 0 35px rgba(245, 158, 11, 0.95), inset 0 0 25px rgba(245, 158, 11, 0.5); }
+        }
+        .active-team-glow {
+            animation: pulse-glow 1.2s infinite;
+            border-color: #F59E0B !important;
+        }
+
+        /* Cyber Grid Background Overlay */
+        .cyber-grid {
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, rgba(6, 182, 212, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(6, 182, 212, 0.05) 1px, transparent 1px);
+        }
+
+        /* Confetti Canvas */
+        #confettiCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 60;
+        }
+    </style>
+</head>
+<body class="cyber-grid antialiased selection:bg-cyan-500 selection:text-slate-950">
+
+    <!-- Canvas for Victory Confetti -->
+    <canvas id="confettiCanvas"></canvas>
+
+    <!-- Top Navigation / Status Header -->
+    <header class="sticky top-0 z-40 backdrop-blur-md bg-slate-900/80 border-b border-slate-700/80 px-4 py-3">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-slate-950 font-black text-xl shadow-lg shadow-amber-500/20">
+                    🏛️
+                </div>
+                <div>
+                    <h1 class="font-display font-bold text-base sm:text-lg tracking-tight text-white flex items-center gap-2">
+                        <span>REBUTAN KEKUASAAN 2045</span>
+                        <span class="hidden md:inline-block text-xs px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-semibold">KPU DIGITAL RI</span>
+                    </h1>
+                    <p class="text-xs text-slate-400 hidden sm:block">Komisi Pemilihan Umum Republik Teknologi • Sistem Rebutan 5 Detik</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 sm:gap-3">
+                <!-- Edit Team Names Modal Button (Visible in Game) -->
+                <button id="btnEditTeams" onclick="openEditTeamsModal()" class="hidden px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs sm:text-sm font-semibold text-amber-300 transition flex items-center gap-2" title="Ubah Nama Kelompok">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    <span class="hidden sm:inline">Ubah Nama Kelompok</span>
+                </button>
+
+                <!-- Question List Modal Button (Visible in Game) -->
+                <button id="btnQuestionList" onclick="toggleQuestionListModal()" class="hidden px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs sm:text-sm font-semibold text-slate-200 transition flex items-center gap-2">
+                    <i class="fa-solid fa-list-ol text-cyan-400"></i>
+                    <span class="hidden sm:inline">Daftar 50 Soal</span>
+                </button>
+
+                <!-- Rules Modal Button -->
+                <button onclick="toggleRulesModal()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs sm:text-sm font-semibold text-slate-200 transition flex items-center gap-2">
+                    <i class="fa-solid fa-book-open text-amber-400"></i>
+                    <span class="hidden sm:inline">Aturan Main</span>
+                </button>
+
+                <!-- Sound Toggle Button -->
+                <button id="btnMute" onclick="toggleSound()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs sm:text-sm font-semibold text-cyan-400 transition flex items-center gap-2" title="Aktifkan/Matikan Suara">
+                    <i id="iconSound" class="fa-solid fa-volume-high"></i>
+                    <span id="textSound" class="hidden md:inline">Suara Aktif</span>
+                </button>
+
+                <!-- Back to Home Button (Visible in Game) -->
+                <button id="btnHome" onclick="confirmResetToHome()" class="hidden px-3 py-2 rounded-xl bg-rose-950/60 hover:bg-rose-900/80 border border-rose-700/60 text-xs sm:text-sm font-semibold text-rose-200 transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-rotate-left"></i>
+                    <span class="hidden sm:inline">Reset</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-7xl mx-auto px-4 py-6 sm:py-8">
+
+        <!-- ==========================================
+             SCREEN 1: SETUP / LOBBY PEMILU 2045
+             ========================================== -->
+        <section id="screenSetup" class="space-y-8 animate-fadeIn">
+            <!-- Hero Banner -->
+            <div class="relative rounded-3xl overflow-hidden bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 border border-cyan-500/30 p-6 sm:p-10 shadow-2xl">
+                <div class="absolute -right-10 -bottom-10 text-9xl opacity-10 select-none pointer-events-none">🤖</div>
+                <div class="max-w-3xl space-y-4 relative z-10">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-xs font-bold uppercase tracking-wider">
+                        <i class="fa-solid fa-bolt"></i> Edisi Pemilu Kabinet Siber 2045
+                    </div>
+                    <h2 class="font-display text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
+                        Perebutan Kursi <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-cyan-300 to-emerald-400">Pemerintahan Teknologi!</span>
+                    </h2>
+                    <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+                        Negara sedang mengadakan pemilihan kabinet baru! Semua fraksi berlomba merebut jabatan <strong>Presiden Digital, Menteri IT, Menteri Cyber Security, hingga Menteri Restart Nasional</strong>. Syarat menjadi pejabat sangat aneh: harus mampu menjawab <strong>50 pertanyaan teknologi absurd</strong> dalam waktu maksimal <strong>5 detik</strong> dengan nilai <strong>+10 poin</strong> per jawaban benar!
+                    </p>
+                </div>
+            </div>
+
+            <!-- Configuration Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- Left Column: Team Setup (7 cols) -->
+                <div class="lg:col-span-7 bg-slate-900/90 border-2 border-cyan-500/40 rounded-3xl p-6 shadow-xl space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                        <div>
+                            <div class="inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider text-cyan-400 bg-cyan-950/60 border border-cyan-500/30 px-2.5 py-0.5 rounded-md mb-1">
+                                <i class="fa-solid fa-pen-nib"></i> Langkah Wajib
+                            </div>
+                            <h3 class="font-display text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-users-gear text-cyan-400"></i>
+                                <span>1. Pengisian Nama Kelompok Peserta</span>
+                            </h3>
+                            <p class="text-xs text-slate-300 mt-0.5">Ketik nama kelompok Anda atau klik tombol dadu 🎲 untuk nama kocak otomatis!</p>
+                        </div>
+
+                        <!-- Team Count Selector -->
+                        <div class="flex flex-col items-end gap-1">
+                            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Jumlah Kelompok:</span>
+                            <div class="flex items-center bg-slate-800 p-1 rounded-2xl border border-slate-700">
+                                <button type="button" onclick="setTeamCount(2)" id="btnCount2" class="team-count-btn px-3.5 py-1.5 rounded-xl text-xs font-bold transition bg-cyan-500 text-slate-950">2 Kelompok</button>
+                                <button type="button" onclick="setTeamCount(3)" id="btnCount3" class="team-count-btn px-3.5 py-1.5 rounded-xl text-xs font-bold transition text-slate-300 hover:text-white">3 Kelompok</button>
+                                <button type="button" onclick="setTeamCount(4)" id="btnCount4" class="team-count-btn px-3.5 py-1.5 rounded-xl text-xs font-bold transition text-slate-300 hover:text-white">4 Kelompok</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Action Bar for Team Names -->
+                    <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-800/50 px-4 py-2.5 rounded-2xl border border-slate-700/80">
+                        <span class="text-xs font-semibold text-slate-300 flex items-center gap-2">
+                            <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i>
+                            <span>Ingin nama partai teknologi yang lucu?</span>
+                        </span>
+                        <button type="button" onclick="randomizeAllTeamNames()" class="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/50 text-amber-300 text-xs font-extrabold transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-dice"></i>
+                            <span>🎲 Acak Semua Nama Kocak</span>
+                        </button>
+                    </div>
+
+                    <!-- Team Name Inputs -->
+                    <div id="teamInputsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Dynamically populated by JS -->
+                    </div>
+
+                    <!-- Keyboard Shortcut Info Box -->
+                    <div class="rounded-2xl bg-slate-800/60 border border-slate-700 p-4 flex items-start gap-3">
+                        <i class="fa-solid fa-keyboard text-2xl text-amber-400 mt-1"></i>
+                        <div class="text-xs sm:text-sm text-slate-300 space-y-1">
+                            <p class="font-bold text-white">Mendukung Tombol Layar Sentuh & Shortcut Keyboard!</p>
+                            <p class="text-slate-400">
+                                Peserta bisa langsung menyentuh tombol Buzzer raksasa di layar, atau menekan tombol keyboard: 
+                                <span class="text-cyan-300 font-semibold">[A]</span> Kelompok 1, 
+                                <span class="text-amber-300 font-semibold">[L]</span> Kelompok 2, 
+                                <span class="text-emerald-300 font-semibold">[Q]</span> Kelompok 3, 
+                                <span class="text-pink-300 font-semibold">[P]</span> Kelompok 4.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Game Mode & Launch (5 cols) -->
+                <div class="lg:col-span-5 bg-slate-900/90 border border-slate-700/80 rounded-3xl p-6 shadow-xl flex flex-col justify-between space-y-6">
+                    <div class="space-y-4">
+                        <div class="border-b border-slate-800 pb-4">
+                            <h3 class="font-display text-xl font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-gamepad text-amber-400"></i>
+                                <span>2. Pilih Mode Sidang KPU</span>
+                            </h3>
+                            <p class="text-xs text-slate-400 mt-0.5">Setiap jawaban benar bernilai <strong>+10 Poin</strong></p>
+                        </div>
+
+                        <!-- Mode Radio Cards -->
+                        <div class="space-y-3">
+                            <label onclick="selectGameMode('full')" id="modeCard_full" class="mode-card cursor-pointer block p-4 rounded-2xl border-2 border-cyan-500 bg-cyan-950/30 transition">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-bold text-white text-sm sm:text-base flex items-center gap-2">
+                                        🔥 Mode Lengkap (50 Pertanyaan)
+                                    </span>
+                                    <span class="text-xs px-2.5 py-0.5 rounded-full bg-cyan-500 text-slate-950 font-extrabold">Utama</span>
+                                </div>
+                                <p class="text-xs text-slate-300 mt-1.5">
+                                    Babak 1 Pilihan Ganda (10 soal) • Babak 2 Rebutan Absurd (30 soal) • Babak 3 Debat Final Presiden (10 soal).
+                                </p>
+                            </label>
+
+                            <label onclick="selectGameMode('quick')" id="modeCard_quick" id="modeCard_quick" class="mode-card cursor-pointer block p-4 rounded-2xl border-2 border-slate-700 bg-slate-800/40 hover:border-slate-600 transition">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-bold text-white text-sm sm:text-base flex items-center gap-2">
+                                        ⚡ Mode Kilat (15 Pertanyaan Pilihan)
+                                    </span>
+                                    <span class="text-xs px-2.5 py-0.5 rounded-full bg-slate-700 text-slate-300 font-bold">15 Menit</span>
+                                </div>
+                                <p class="text-xs text-slate-400 mt-1.5">
+                                    Kombinasi 5 soal Babak 1, 5 soal Babak 2, dan 5 soal Debat Final terbaik untuk sesi ice-breaking singkat.
+                                </p>
+                            </label>
+
+                            <label onclick="selectGameMode('round1')" id="modeCard_round1" class="mode-card cursor-pointer block p-4 rounded-2xl border-2 border-slate-700 bg-slate-800/40 hover:border-slate-600 transition">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-bold text-white text-sm sm:text-base flex items-center gap-2">
+                                        🎯 Pemanasan Babak 1 (10 Pilihan Ganda)
+                                    </span>
+                                    <span class="text-xs px-2.5 py-0.5 rounded-full bg-slate-700 text-slate-300 font-bold">Simulasi</span>
+                                </div>
+                                <p class="text-xs text-slate-400 mt-1.5">
+                                    Khusus menguji refleks rebutan pada 10 soal pilihan ganda perebutan kursi kabinet dasar.
+                                </p>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Start Game CTA -->
+                    <div class="pt-2">
+                        <button onclick="startGame()" class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-display font-extrabold text-lg sm:text-xl shadow-xl shadow-amber-500/25 transform hover:-translate-y-0.5 active:translate-y-0 transition flex items-center justify-center gap-3">
+                            <i class="fa-solid fa-gavel"></i>
+                            <span>MULAI PEMILIHAN PRESIDEN!</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ==========================================
+             SCREEN 2: ARENA PERMAINAN & PANEL MODERATOR
+             ========================================== -->
+        <section id="screenGame" class="hidden space-y-6">
+            
+            <!-- 1. SCOREBOARD & CURRENT RANKINGS -->
+            <div id="scoreboardGrid" class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                <!-- Populated dynamically with Team Cards, Ranks, and Scores -->
+            </div>
+
+            <!-- 2. STAGE & QUESTION DISPLAY CARD -->
+            <div class="relative rounded-3xl bg-slate-900/95 border-2 border-slate-700/90 shadow-2xl overflow-hidden">
+                
+                <!-- Round Banner & Progress Bar -->
+                <div class="bg-slate-800/90 border-b border-slate-700 px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center gap-2.5">
+                        <span id="badgeRound" class="px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-cyan-500 text-slate-950">
+                            BABAK 1
+                        </span>
+                        <h2 id="titleRound" class="font-display font-bold text-sm sm:text-base text-slate-200">
+                            Perebutan Kursi Kabinet (Pilihan Ganda)
+                        </h2>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <!-- Direct Round Jump Buttons -->
+                        <div class="hidden xl:flex items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-700 text-xs">
+                            <button onclick="jumpToRound(1)" class="px-2.5 py-1 rounded-lg hover:bg-slate-800 text-slate-300 font-semibold transition" title="Lompat ke Babak 1 (Soal 1-10)">B1</button>
+                            <button onclick="jumpToRound(2)" class="px-2.5 py-1 rounded-lg hover:bg-slate-800 text-slate-300 font-semibold transition" title="Lompat ke Babak 2 (Soal 11-40)">B2</button>
+                            <button onclick="jumpToRound(3)" class="px-2.5 py-1 rounded-lg hover:bg-slate-800 text-slate-300 font-semibold transition" title="Lompat ke Babak 3 (Soal 41-50)">B3</button>
+                        </div>
+
+                        <div class="text-xs sm:text-sm font-bold text-amber-400 bg-slate-900 px-3.5 py-1.5 rounded-xl border border-slate-700">
+                            Soal <span id="qCurrentNum">1</span> / <span id="qTotalNum">50</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visual Progress Bar -->
+                <div class="w-full h-1.5 bg-slate-800">
+                    <div id="qProgressBar" class="h-full bg-gradient-to-r from-cyan-400 via-amber-400 to-emerald-400 transition-all duration-300" style="width: 2%"></div>
+                </div>
+
+                <!-- ACTIVE RESPONDER & 5-SECOND COUNTDOWN OVERLAY BANNER -->
+                <div id="responderBanner" class="hidden bg-gradient-to-r from-amber-500/20 via-amber-500/30 to-amber-500/20 border-b border-amber-500/50 px-6 py-4">
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                            <span class="w-3.5 h-3.5 rounded-full bg-amber-400 animate-ping"></span>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wider text-amber-300">GILIRAN MENJAWAB SEKARANG:</p>
+                                <h3 id="activeTeamNameDisplay" class="font-display text-xl sm:text-2xl font-extrabold text-white">Partai Server Pusat</h3>
+                            </div>
+                        </div>
+
+                        <!-- 5.0s Digital Timer -->
+                        <div class="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+                            <div class="w-full sm:w-48 bg-slate-950/80 rounded-full h-4 p-0.5 border border-amber-500/40 overflow-hidden">
+                                <div id="timerBarFill" class="h-full bg-gradient-to-r from-emerald-400 via-amber-400 to-rose-500 rounded-full transition-all duration-100" style="width: 100%"></div>
+                            </div>
+                            <div id="timerNumberDisplay" class="font-display text-3xl sm:text-4xl font-black text-amber-400 tabular-nums min-w-[4.5rem] text-right">
+                                5.0s
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question Body -->
+                <div class="p-6 sm:p-8 space-y-6">
+                    <!-- Question Text -->
+                    <div class="space-y-2">
+                        <span id="qTypeTag" class="inline-block text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-slate-800 text-cyan-400 border border-slate-700">
+                            Pilihan Ganda • +10 Poin
+                        </span>
+                        <h3 id="questionText" class="font-display text-xl sm:text-3xl font-bold text-white leading-snug">
+                            Jika Presiden lupa password Wi-Fi Istana, apa tindakan paling tepat?
+                        </h3>
+                    </div>
+
+                    <!-- Multiple Choice Options (Shown only in Round 1) -->
+                    <div id="mcqOptionsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                        <!-- Populated dynamically for Round 1 -->
+                    </div>
+
+                    <!-- Moderator Answer / Funny Key Box (Collapsible so screen-sharing is safe!) -->
+                    <div id="answerRevealBox" class="hidden rounded-2xl bg-emerald-950/50 border-2 border-emerald-500/60 p-4 sm:p-5 transition-all">
+                        <div class="flex items-start gap-3">
+                            <div class="w-9 h-9 rounded-xl bg-emerald-500 text-slate-950 flex items-center justify-center font-black text-lg shrink-0 mt-0.5">
+                                💡
+                            </div>
+                            <div class="space-y-1">
+                                <span id="answerLabelTitle" class="text-xs font-extrabold uppercase tracking-wider text-emerald-300">
+                                    KUNCI JAWABAN & BOCORAN KOMEDI KPU:
+                                </span>
+                                <p id="answerTextContent" class="text-base sm:text-lg font-bold text-white">
+                                    B. Reset router dan berdoa
+                                </p>
+                                <p id="answerJokeNote" class="text-xs sm:text-sm text-emerald-200/90 italic">
+                                    Catatan KPU: Berdoa mempercepat koneksi hingga 0.001 kbps.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status Message Pill (e.g. Time Up, Correct, Wrong) -->
+                    <div id="statusMessageBanner" class="hidden rounded-2xl p-3.5 text-center font-bold text-sm sm:text-base border">
+                    </div>
+
+                    <!-- Auto-Advance Progress Indicator Banner -->
+                    <div id="autoAdvanceBanner" class="hidden rounded-2xl bg-slate-800/95 border border-cyan-500/50 p-4 space-y-2.5 shadow-lg">
+                        <div class="flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
+                            <span class="font-bold text-cyan-300 flex items-center gap-2">
+                                <i class="fa-solid fa-forward-fast animate-pulse"></i>
+                                <span id="autoAdvanceText">Otomatis menuju soal selanjutnya dalam 2.5 detik...</span>
+                            </span>
+                            <div class="flex items-center gap-2">
+                                <button onclick="cancelAutoAdvance()" class="px-3 py-1 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200 font-semibold text-xs transition">
+                                    Tahan di Soal Ini
+                                </button>
+                                <button onclick="nextQuestion()" class="px-3 py-1 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-extrabold text-xs transition">
+                                    Lanjut Sekarang <i class="fa-solid fa-arrow-right ml-1"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="w-full h-2 bg-slate-950 rounded-full overflow-hidden">
+                            <div id="autoAdvanceBar" class="h-full bg-gradient-to-r from-cyan-400 to-emerald-400 transition-all duration-75" style="width: 100%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. BUZZER BUTTONS ARENA (For Participants) -->
+                <div class="bg-slate-950/70 border-t border-slate-800 p-4 sm:p-6 space-y-3">
+                    <div class="flex items-center justify-between text-xs text-slate-400">
+                        <span class="font-bold uppercase tracking-wider flex items-center gap-1.5 text-cyan-400">
+                            <i class="fa-solid fa-hand-pointer animate-bounce"></i> TOMBOL REBUTAN PESERTA (TEKAN CEPAT!)
+                        </span>
+                        <span id="buzzerStatusHint">Siapa cepat dia berhak menjawab (Waktu 5 detik)</span>
+                    </div>
+
+                    <div id="buzzersGrid" class="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-1">
+                        <!-- Dynamically populated Buzzer Buttons -->
+                    </div>
+                </div>
+
+                <!-- 4. MODERATOR (KPU) CONTROL DECK -->
+                <div class="bg-slate-900 border-t border-slate-800 px-4 sm:px-6 py-4">
+                    <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
+                        
+                        <!-- Left: Reveal Answer & Reset Buzzer -->
+                        <div class="flex flex-wrap items-center gap-2.5">
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-400 mr-1 hidden sm:inline">
+                                <i class="fa-solid fa-user-tie text-amber-400"></i> Panel KPU:
+                            </span>
+
+                            <button onclick="toggleAnswerReveal()" id="btnToggleAnswer" class="px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs sm:text-sm font-bold text-amber-300 transition flex items-center gap-2">
+                                <i class="fa-solid fa-eye"></i>
+                                <span id="textToggleAnswer">Intip Kunci / Jawaban Lucu</span>
+                            </button>
+
+                            <button onclick="resetBuzzersForCurrentQuestion()" class="px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs sm:text-sm font-semibold text-slate-300 transition flex items-center gap-1.5" title="Buka kunci semua tombol rebutan">
+                                <i class="fa-solid fa-unlock"></i>
+                                <span>Buka Ulang Buzzer</span>
+                            </button>
+
+                            <button onclick="toggleAutoAdvanceMode()" id="btnToggleAutoNext" class="px-3 py-2.5 rounded-xl bg-cyan-950/70 hover:bg-cyan-900/80 border border-cyan-500/50 text-xs sm:text-sm font-bold text-cyan-300 transition flex items-center gap-1.5" title="Aktifkan/Matikan pindah soal otomatis setelah selesai dijawab">
+                                <i id="iconAutoNext" class="fa-solid fa-bolt"></i>
+                                <span id="textAutoNext">Auto-Lanjut: ON</span>
+                            </button>
+                        </div>
+
+                        <!-- Center: Judge Answer (Correct +10 / Wrong Pass) -->
+                        <div class="flex items-center gap-2.5">
+                            <button id="btnJudgeCorrect" onclick="judgeAnswer(true)" disabled class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-40 disabled:pointer-events-none text-slate-950 font-extrabold text-xs sm:text-sm shadow-lg shadow-emerald-500/20 transition flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-circle-check"></i>
+                                <span>BENAR (+10 Poin)</span>
+                            </button>
+
+                            <button id="btnJudgeWrong" onclick="judgeAnswer(false)" disabled class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 disabled:opacity-40 disabled:pointer-events-none text-white font-extrabold text-xs sm:text-sm shadow-lg shadow-rose-600/20 transition flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-circle-xmark"></i>
+                                <span>SALAH / LEMPAR</span>
+                            </button>
+                        </div>
+
+                        <!-- Right: Question Navigation & Finish -->
+                        <div class="flex items-center justify-between sm:justify-end gap-2">
+                            <button onclick="prevQuestion()" id="btnPrevQ" class="px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs sm:text-sm font-bold text-slate-200 transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-backward-step"></i>
+                                <span class="hidden sm:inline">Sebelumnya</span>
+                            </button>
+
+                            <button onclick="nextQuestion()" id="btnNextQ" class="px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs sm:text-sm font-extrabold transition flex items-center gap-1.5 shadow-lg shadow-cyan-500/20">
+                                <span>Soal Lanjut</span>
+                                <i class="fa-solid fa-forward-step"></i>
+                            </button>
+
+                            <button onclick="showVictoryScreen()" class="px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 text-xs sm:text-sm font-extrabold transition flex items-center gap-1.5 shadow-lg shadow-amber-500/20" title="Umumkan Pemenang Kabinet">
+                                <i class="fa-solid fa-trophy"></i>
+                                <span class="hidden md:inline">Lantik Kabinet</span>
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- ==========================================
+             SCREEN 3: PENGUMUMAN KABINET PEMENANG
+             ========================================== -->
+        <section id="screenVictory" class="hidden space-y-8 py-4 animate-fadeIn">
+            <div class="text-center space-y-3 max-w-2xl mx-auto">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/20 border border-amber-400/50 text-amber-300 text-xs sm:text-sm font-extrabold uppercase tracking-widest">
+                    🎉 KEPUTUSAN RESMI KPU TEKNOLOGI 2045 🎉
+                </div>
+                <h2 class="font-display text-3xl sm:text-5xl font-black text-white">
+                    🏆 Pelantikan Kabinet Republik Teknologi
+                </h2>
+                <p class="text-slate-300 text-sm sm:text-base">
+                    Selamat kepada para pejabat baru yang berhasil menjawab pertanyaan teknologi paling absurd di muka bumi!
+                </p>
+            </div>
+
+            <!-- Podium / Cabinet Cards Grid -->
+            <div id="victoryPodiumGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                <!-- Populated dynamically by rank -->
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
+                <button onclick="returnToGameFromVictory()" class="px-6 py-3.5 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 font-bold text-sm sm:text-base transition flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Kembali ke Soal Terakhir</span>
+                </button>
+
+                <button onclick="copyCabinetReport()" id="btnCopyReport" class="px-6 py-3.5 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-extrabold text-sm sm:text-base shadow-xl shadow-cyan-500/20 transition flex items-center gap-2">
+                    <i class="fa-solid fa-file-signature"></i>
+                    <span>Salin Berita Acara KPU</span>
+                </button>
+
+                <button onclick="resetToSetupScreen()" class="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-extrabold text-sm sm:text-base shadow-xl shadow-amber-500/25 transition flex items-center gap-2">
+                    <i class="fa-solid fa-rotate"></i>
+                    <span>Main Pemilu Baru</span>
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ==========================================
+         MODAL 1: ATURAN PERMAINAN & PANDUAN
+         ========================================== -->
+    <div id="modalRules" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                <h3 class="font-display text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
+                    <span>📜 Aturan Permainan & Sistem Pemilu 2045</span>
+                </h3>
+                <button onclick="toggleRulesModal()" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="space-y-4 text-sm text-slate-300 leading-relaxed">
+                <ol class="list-decimal list-inside space-y-2.5 font-medium">
+                    <li><strong class="text-white">Pembagian Fraksi:</strong> Peserta dibagi menjadi 2 hingga 4 kelompok (Partai/Koalisi). Nama kelompok dapat diisi bebas atau diacak otomatis.</li>
+                    <li><strong class="text-white">Pembacaan Soal:</strong> Moderator (Ketua KPU) membacakan pertanyaan teknologi yang tampil di layar (total 50 pertanyaan dalam 3 babak).</li>
+                    <li><strong class="text-white">Sistem Rebutan Cepat:</strong> Kelompok yang paling cepat menekan tombol Buzzer di layar (atau tombol keyboard <code class="px-1.5 py-0.5 bg-slate-800 text-cyan-300 rounded">A</code>, <code class="px-1.5 py-0.5 bg-slate-800 text-amber-300 rounded">L</code>, <code class="px-1.5 py-0.5 bg-slate-800 text-emerald-300 rounded">Q</code>, <code class="px-1.5 py-0.5 bg-slate-800 text-pink-300 rounded">P</code>) berhak menjawab lebih dulu.</li>
+                    <li><strong class="text-white">Batas Waktu 5 Detik:</strong> Setelah tombol ditekan, timer 5.0 detik otomatis berjalan. Peserta harus segera menjawab sebelum bel waktu habis berbunyi!</li>
+                    <li><strong class="text-white">Skor & Penilaian (+10 Poin):</strong> Jawaban benar atau kreatif/kocak (sesuai keputusan Moderator) mendapat <strong>+10 Poin</strong>.</li>
+                    <li><strong class="text-white">Lempar Soal:</strong> Jika jawaban salah atau waktu habis, Moderator menekan tombol <em>"Salah / Lempar"</em> sehingga kelompok lain berkesempatan menekan tombol rebutan.</li>
+                    <li><strong class="text-white">Koreksi Skor Manual:</strong> Moderator dapat menambah atau mengurangi skor (<code class="px-1.5 py-0.5 bg-slate-800 rounded">+10 / -10</code>) langsung di papan skor atas jika diperlukan.</li>
+                </ol>
+
+                <div class="p-4 rounded-2xl bg-slate-800/70 border border-slate-700 space-y-2">
+                    <h4 class="font-bold text-amber-400">🎖️ Gelar Pemenang Kabinet Republik Teknologi:</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                        <div>👑 <strong>Juara 1:</strong> Presiden Digital</div>
+                        <div>💻 <strong>Juara 2:</strong> Menteri IT</div>
+                        <div>🛡️ <strong>Juara 3:</strong> Menteri Cyber Security</div>
+                        <div>🔌 <strong>Juara 4:</strong> Menteri Restart Nasional</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-2 text-right">
+                <button onclick="toggleRulesModal()" class="px-6 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-sm">
+                    Siap, Mengerti!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         MODAL 2: DAFTAR 50 PERTANYAAN (NAVIGASI CEPAT)
+         ========================================== -->
+    <div id="modalQuestionList" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-3xl max-w-4xl w-full p-6 shadow-2xl flex flex-col max-h-[88vh]">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-4 shrink-0">
+                <div>
+                    <h3 class="font-display text-xl font-bold text-white">🗂️ Indeks 50 Pertanyaan Sidang KPU</h3>
+                    <p class="text-xs text-slate-400">Klik nomor soal untuk melompat langsung ke soal tersebut</p>
+                </div>
+                <button onclick="toggleQuestionListModal()" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div id="questionIndexContainer" class="overflow-y-auto py-4 space-y-2 pr-2">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         MODAL 2B: UBAH NAMA KELOMPOK SAAT PERMAINAN
+         ========================================== -->
+    <div id="modalEditTeams" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl space-y-5">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                <div>
+                    <h3 class="font-display text-xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-pen-to-square text-amber-400"></i>
+                        <span>Ubah Nama Kelompok</span>
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-0.5">Perubahan nama langsung tampil di papan skor dan tombol rebutan</p>
+                </div>
+                <button onclick="closeEditTeamsModal()" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div id="modalEditTeamsContainer" class="space-y-3">
+                <!-- Populated dynamically -->
+            </div>
+
+            <div class="flex items-center justify-end gap-3 pt-2 border-t border-slate-800">
+                <button onclick="closeEditTeamsModal()" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-sm">
+                    Batal
+                </button>
+                <button onclick="saveEditedTeamNames()" class="px-6 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-extrabold text-sm shadow-lg shadow-cyan-500/20">
+                    Simpan Nama Kelompok
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         MODAL 3: KONFIRMASI RESET PERMAINAN
+         ========================================== -->
+    <div id="modalConfirmReset" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 text-center">
+            <div class="w-14 h-14 rounded-2xl bg-rose-500/20 border border-rose-500/40 text-rose-400 flex items-center justify-center text-2xl mx-auto">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="font-display text-xl font-bold text-white">Bubarkan Sidang & Kembali ke Awal?</h3>
+            <p class="text-xs sm:text-sm text-slate-400">
+                Skor perebutan kekuasaan saat ini akan direset. Pastikan Anda sudah melantik pemenang jika permainan telah selesai.
+            </p>
+            <div class="flex items-center justify-center gap-3 pt-2">
+                <button onclick="closeConfirmReset()" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-sm">
+                    Batal
+                </button>
+                <button onclick="resetToSetupScreen()" class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-sm">
+                    Ya, Reset Pemilu
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         JAVASCRIPT ENGINE: DATA 50 SOAL, AUDIO & LOGIC
+         ========================================== -->
+    <script>
+        /* -----------------------------------------------------------
+           1. DATABASE TEPAT 50 PERTANYAAN KOMEDI TEKNOLOGI & PEMERINTAHAN
+              - Babak 1: Soal 1 - 10 (10 Soal Pilihan Ganda)
+              - Babak 2: Soal 11 - 40 (30 Soal Rebutan Absurd)
+              - Babak 3: Soal 41 - 50 (10 Soal Debat Final Presiden)
+           ----------------------------------------------------------- */
+        const ALL_50_QUESTIONS = [
+            // === BABAK 1: 10 SOAL PILIHAN GANDA (SOAL 1 - 10) ===
+            {
+                id: 1,
+                round: 1,
+                type: 'mcq',
+                q: "Jika Presiden lupa password Wi-Fi Istana, apa tindakan paling tepat?",
+                options: [
+                    "A. Panggil hacker negara",
+                    "B. Reset router dan berdoa",
+                    "C. Ganti nama negara",
+                    "D. Minta password ke tetangga"
+                ],
+                correctIndex: 1,
+                a: "B. Reset router dan berdoa",
+                note: "SOP Resmi Istana: Tusuk lubang reset pakai lidi sambil berdoa agar kuota negara tidak ikut terhapus."
+            },
+            {
+                id: 2,
+                round: 1,
+                type: 'mcq',
+                q: "Saat Presiden sedang pidato kenegaraan live streaming, tiba-tiba muncul tulisan 'Windows Update 0% Jangan Matikan Komputer'. Apa yang harus dilakukan?",
+                options: [
+                    "A. Ikut membeku sampai update 100%",
+                    "B. Cabut colokan listrik satu kecamatan",
+                    "C. Menyalahkan kurir paket",
+                    "D. Pindah ke zaman batu"
+                ],
+                correctIndex: 0,
+                a: "A. Ikut membeku sampai update 100%",
+                note: "Rakyat akan mengira koneksi mereka yang buffering, padahal Presidennya yang sedang loading."
+            },
+            {
+                id: 3,
+                round: 1,
+                type: 'mcq',
+                q: "Grup WhatsApp Kabinet penuh dengan stiker 'Selamat Pagi' dari para Menteri hingga memori HP Presiden penuh. Solusi terbaik adalah...",
+                options: [
+                    "A. Jual HP Presiden di pasar loak",
+                    "B. Angkat Admin Grup menjadi Duta Stiker Nasional",
+                    "C. Aktifkan fitur pesan sementara & razia stiker bapak-bapak",
+                    "D. Kirim balik stiker kucing menangis 100 kali"
+                ],
+                correctIndex: 2,
+                a: "C. Aktifkan fitur pesan sementara & razia stiker bapak-bapak",
+                note: "Kebijakan penghematan memori nasional demi kelancaran grup kabinet."
+            },
+            {
+                id: 4,
+                round: 1,
+                type: 'mcq',
+                q: "Jika mouse wireless milik Menteri Keuangan hilang saat menyusun APBN, siapa yang pertama kali harus dicurigai?",
+                options: [
+                    "A. Kucing Istana yang mengira itu tikus beneran",
+                    "B. Kursor yang kabur dari layar",
+                    "C. Alien dari planet Mars",
+                    "D. Keyboard yang cemburu"
+                ],
+                correctIndex: 0,
+                a: "A. Kucing Istana yang mengira itu tikus beneran",
+                note: "Kucing Istana memang sangat berdedikasi menangkap segala jenis mouse, baik organik maupun bluetooth."
+            },
+            {
+                id: 5,
+                round: 1,
+                type: 'mcq',
+                q: "Apa syarat utama melamar menjadi Kepala Dinas Cloud Computing di tahun 2045?",
+                options: [
+                    "A. Punya sertifikat pawang hujan",
+                    "B. Hafal seluruh lirik lagu anak-anak",
+                    "C. Paham bahwa Cloud bukan awan mendung di langit",
+                    "D. Bisa terbang pakai balon udara"
+                ],
+                correctIndex: 2,
+                a: "C. Paham bahwa Cloud bukan awan mendung di langit",
+                note: "Masih banyak pejabat yang membawa payung saat disuruh upload data ke Cloud."
+            },
+            {
+                id: 6,
+                round: 1,
+                type: 'mcq',
+                q: "Saat rapat paripurna via Zoom, seorang Gubernur tidak sadar filter wajah kucingnya menyala. Apa respon Ketua Sidang yang paling bijak?",
+                options: [
+                    "A. Memberikan ikan asin secara virtual",
+                    "B. Mengetuk palu sidang sambil mengeong",
+                    "C. Meminta tim IT mematikan filter sebelum Gubernur minta whiskas",
+                    "D. Mengubah rapat menjadi kontes hewan peliharaan"
+                ],
+                correctIndex: 2,
+                a: "C. Meminta tim IT mematikan filter sebelum Gubernur minta whiskas",
+                note: "Kewibawaan pejabat harus diselamatkan dari kumis kucing virtual."
+            },
+            {
+                id: 7,
+                round: 1,
+                type: 'mcq',
+                q: "Kenapa komputer di kantor kelurahan sering dipasang kipas angin duduk di samping CPU-nya?",
+                options: [
+                    "A. Supaya virus komputer masuk angin",
+                    "B. Karena prosesornya gerah memikirkan beban negara",
+                    "C. Agar ketikan menjadi lebih cepat tertiup angin",
+                    "D. Biar kelihatan seperti server pesawat ulang-alik"
+                ],
+                correctIndex: 1,
+                a: "B. Karena prosesornya gerah memikirkan beban negara",
+                note: "Pendingin cair (liquid cooling) terlalu mahal, kipas angin kos-kosan adalah kearifan lokal."
+            },
+            {
+                id: 8,
+                round: 1,
+                type: 'mcq',
+                q: "Jika kabel fiber optik bawah laut digigit ikan hiu, kementerian mana yang harus turun tangan melakukan negosiasi?",
+                options: [
+                    "A. Kementerian Kelautan & Perikanan Siber",
+                    "B. Kementerian Perhubungan Darat",
+                    "C. Dinas Pemadam Kebakaran",
+                    "D. Persatuan Dokter Gigi Hiu"
+                ],
+                correctIndex: 0,
+                a: "A. Kementerian Kelautan & Perikanan Siber",
+                note: "Menawarkan paket kuota unlimited kepada hiu agar berhenti mengunyah kabel internet warga."
+            },
+            {
+                id: 9,
+                round: 1,
+                type: 'mcq',
+                q: "Ketika website pendaftaran CPNS 2045 error '502 Bad Gateway', apa arti sebenarnya menurut kamus humor pejabat?",
+                options: [
+                    "A. Pintu gerbang kantornya kurang bagus catnya",
+                    "B. Servernya sedang istirahat minum kopi karena diserbu jutaan pelamar",
+                    "C. Komputer server minta naik gaji",
+                    "D. Satpam lupa membuka gembok pagar"
+                ],
+                correctIndex: 1,
+                a: "B. Servernya sedang istirahat minum kopi karena diserbu jutaan pelamar",
+                note: "Tradisi tahunan: jutaan orang login bersamaan di detik pertama, server langsung pingsan."
+            },
+            {
+                id: 10,
+                round: 1,
+                type: 'mcq',
+                q: "Tombol keyboard mana yang paling sering ditekan oleh Menteri ketika program kerja mengalami kegagalan?",
+                options: [
+                    "A. CTRL + Z (Undo masa lalu)",
+                    "B. Caps Lock (Biar kelihatan ngegas)",
+                    "C. Print Screen",
+                    "D. Num Lock"
+                ],
+                correctIndex: 0,
+                a: "A. CTRL + Z (Undo masa lalu)",
+                note: "Sayangnya kebijakan di dunia nyata belum ada fitur Undo dan Redo otomatis."
+            },
+
+            // === BABAK 2: 30 SOAL REBUTAN ABSURD CALON PEJABAT (SOAL 11 - 40) ===
+            {
+                id: 11,
+                round: 2,
+                type: 'buzzer',
+                q: "Kalau laptop bisa ikut pemilu, apa janji kampanyenya?",
+                a: "Booting lebih cepat dan tidak pernah bluescreen!",
+                note: "Bonus janji kampanye: Baterai awet tanpa perlu bawa charger ke mana-mana."
+            },
+            {
+                id: 12,
+                round: 2,
+                type: 'buzzer',
+                q: "Jika Menteri Komunikasi kehilangan sinyal, harus menghubungi siapa?",
+                a: "Menteri Telekomunikasi lewat telepati.",
+                note: "Atau naik ke atap gedung kementerian sambil mengangkat HP tinggi-tinggi."
+            },
+            {
+                id: 13,
+                round: 2,
+                type: 'buzzer',
+                q: "Kalau Google Maps tersesat, siapa yang mengarahkan?",
+                a: "Pakai kompas dan tanya tukang parkir.",
+                note: "Tukang parkir lokal punya akurasi GPS lebih tinggi daripada satelit mana pun: 'Terus... terus... balas kiri, yak stop!'"
+            },
+            {
+                id: 14,
+                round: 2,
+                type: 'buzzer',
+                q: "Jika robot menjadi Presiden, apa program pertamanya?",
+                a: "Menghapus rapat yang bisa diganti email.",
+                note: "Efisiensi waktu nasional meningkat 500%, konsumsi snack rapat turun drastis."
+            },
+            {
+                id: 15,
+                round: 2,
+                type: 'buzzer',
+                q: "Kenapa hacker tidak cocok jadi Menteri Pertanian?",
+                a: "Karena yang ditanam malah backdoor (atau virus Trojan).",
+                note: "Disuruh menanam padi, malah menanam script phishing di sawah."
+            },
+            {
+                id: 16,
+                round: 2,
+                type: 'buzzer',
+                q: "Jika printer Istana mogok, apa yang harus dilakukan?",
+                a: "Berikan cuti dan cek tinta (serta pura-pura tidak terburu-buru).",
+                note: "Hukum alam printer: Kalau kita buru-buru, dia macet. Jadi kita harus berakting santai di depan printer."
+            },
+            {
+                id: 17,
+                round: 2,
+                type: 'buzzer',
+                q: "Apa bedanya RAM dengan anggota kabinet?",
+                a: "RAM bisa penuh karena banyak aplikasi (kalau kabinet penuh karena bagi-bagi kursi koalisi).",
+                note: "Dua-duanya kalau sudah kepenuhan bikin sistem berjalan lambat!"
+            },
+            {
+                id: 18,
+                round: 2,
+                type: 'buzzer',
+                q: "Kalau semua rakyat menggunakan VPN, apakah negara pindah lokasi?",
+                a: "Tidak, yang pindah cuma alamat IP.",
+                note: "Secara fisik tetap di Indonesia, tapi secara server tiba-tiba seluruh warga terdeteksi di Singapura atau Belanda."
+            },
+            {
+                id: 19,
+                round: 2,
+                type: 'buzzer',
+                q: "Jika AI menjadi Menteri Pendidikan, apa tugasnya?",
+                a: "Menjawab soal, tetapi tetap menyuruh murid belajar.",
+                note: "AI tahu siapa murid yang tugas esainya hasil copy-paste karena dia sendiri yang membuatkan jawabannya semalam!"
+            },
+            {
+                id: 20,
+                round: 2,
+                type: 'buzzer',
+                q: "Jika server negara bisa berbicara, apa kalimat pertamanya?",
+                a: "Tolong jangan restart saya setiap lima menit!",
+                note: "Keluhan kedua server: 'Berhenti menyalahkan saya setiap kali kalian lupa input data!'"
+            },
+            {
+                id: 21,
+                round: 2,
+                type: 'buzzer',
+                q: "Kenapa flashdisk pejabat selalu harus dicabut dengan 'Safely Remove Hardware'?",
+                a: "Supaya rahasia negara tidak kaget dan jantungan.",
+                note: "Padahal butuh waktu 3 jam nunggu tulisan 'Safe to Remove', ujung-ujungnya dicabut paksa juga."
+            },
+            {
+                id: 22,
+                round: 2,
+                type: 'buzzer',
+                q: "Jika ibu kota dipindah ke Metaverse, bagaimana cara rakyat mengurus KTP?",
+                a: "Harus fotokopi avatar bolak-balik dan dilegalisir pakai NFT.",
+                note: "Sudah tahun 2045 di dunia virtual, tapi tetap ditanya: 'Mana map warna birunya, Mas?'"
+            },
+            {
+                id: 23,
+                round: 2,
+                type: 'buzzer',
+                q: "Apa jadinya kalau sistem tilang elektronik (ETLE) dilengkapi fitur komentar netizen?",
+                a: "Pelanggar tidak cuma kena denda, tapi juga kena mental dirujak warga.",
+                note: "Notifikasi surat tilang: 'Anda melanggar lampu merah, 14.200 warga menertawakan helm Anda.'"
+            },
+            {
+                id: 24,
+                round: 2,
+                type: 'buzzer',
+                q: "Jika Menteri Perhubungan menggunakan aplikasi ojek online, mengapa beliau tidak pernah memberi bintang 1?",
+                a: "Takut di-suspend dan disuruh jalan kaki saat kunjungan kerja.",
+                note: "Pejabat teladan selalu kasih bintang 5 plus tip senyuman ramah."
+            },
+            {
+                id: 25,
+                round: 2,
+                type: 'buzzer',
+                q: "Kenapa komputer pemerintah sangat takut pada hari Senin pagi?",
+                a: "Karena langsung dipaksa buka 40 tab Excel bersamaan sebelum sempat panas.",
+                note: "Belum selesai loading wallpaper, mouse sudah diklik-klik 50 kali oleh staf yang panik."
+            },
+            {
+                id: 26,
+                round: 2,
+                type: 'buzzer',
+                q: "Kalau CCTV jalan raya bisa ikut bergosip, topik apa yang paling sering mereka bicarakan?",
+                a: "Motor yang sein kiri tapi beloknya ke kanan!",
+                note: "Misteri terbesar di jalan raya yang bahkan algoritma AI tahun 2045 belum sanggup memprediksinya."
+            },
+            {
+                id: 27,
+                round: 2,
+                type: 'buzzer',
+                q: "Jika anggaran negara disimpan di dalam keranjang belanja e-commerce, kapan waktu pencairannya?",
+                a: "Menunggu tanggal kembar (11.11 / 12.12) demi gratis ongkir nasional!",
+                note: "Menteri Keuangan rela begadang jam 12 malam buat klaim voucher cashback APBN."
+            },
+            {
+                id: 28,
+                round: 2,
+                type: 'buzzer',
+                q: "Apa alasan teknis mikrofon di ruang sidang sering mati tepat saat anggota dewan sedang interupsi?",
+                a: "Fitur 'Auto-Mute' demi menjaga kedamaian dan gendang telinga pemirsa.",
+                note: "Teknisi audio ruang sidang punya refleks tangan lebih cepat dari pemain e-sports profesional."
+            },
+            {
+                id: 29,
+                round: 2,
+                type: 'buzzer',
+                q: "Jika tombol 'Caps Lock' dilarang oleh Undang-Undang ITE, bagaimana cara netizen marah-marah di kolom komentar?",
+                a: "Menggunakan tanda seru 500 kali dan huruf cetak miring tebal!",
+                note: "Atau mengirim voice note sambil berteriak di dekat kipas angin."
+            },
+            {
+                id: 30,
+                round: 2,
+                type: 'buzzer',
+                q: "Mengapa kabel kusut di bawah meja kerja staf IT tidak boleh dirapikan sembarangan?",
+                a: "Karena ada satu kabel keramat yang kalau tersenggol, internet satu gedung langsung mati.",
+                note: "Tidak ada yang tahu kabel itu nyambung ke mana, tapi jangan pernah disentuh!"
+            },
+            {
+                id: 31,
+                round: 2,
+                type: 'buzzer',
+                q: "Jika syarat menjadi Gubernur adalah memiliki minimal 1 juta followers, apa program kerja utamanya?",
+                a: "Membangun jembatan sambil live TikTok dan bagi-bagi gift!",
+                note: "'Halo guys, kalau tembus 10 juta tap-tap layar, jalan berlubang di kecamatan ini langsung kita aspal detik ini juga!'"
+            },
+            {
+                id: 32,
+                round: 2,
+                type: 'buzzer',
+                q: "Kalau baterai HP Presiden tinggal 1% saat kunjungan di hutan, siapa yang paling panik?",
+                a: "Ajudan pembawa powerbank yang lupa men-charge powerbank-nya semalam.",
+                note: "Kabelnya bawa tiga macam, tapi powerbank-nya kedip-kedip kosong."
+            },
+            {
+                id: 33,
+                round: 2,
+                type: 'buzzer',
+                q: "Apa fungsi utama fitur 'Airplane Mode' pada smartphone pejabat saat jam pulang kantor?",
+                a: "Menghilang dari kejaran revisi laporan mendadak!",
+                note: "Padahal orangnya sedang makan bakso di kantin bawah, tapi bilangnya sedang di atas pesawat."
+            },
+            {
+                id: 34,
+                round: 2,
+                type: 'buzzer',
+                q: "Jika CAPTCHA 'Pilih semua gambar lampu lalu lintas' dijadikan ujian masuk kabinet, kenapa banyak yang gagal?",
+                a: "Karena bingung apakah tiang besinya ikut dihitung lampu lalu lintas atau bukan!",
+                note: "Kegalauan terbesar umat manusia saat berhadapan dengan verifikasi 'Saya Bukan Robot'."
+            },
+            {
+                id: 35,
+                round: 2,
+                type: 'buzzer',
+                q: "Kenapa di tahun 2045 tanda tangan digital masih sering diminta cetak di kertas lalu di-scan lagi?",
+                a: "Demi melestarikan budaya antre fotokopi sebagai warisan leluhur.",
+                note: "Dokumen PDF -> Diprint -> Ditandatangani basah -> Discan jadi PDF lagi. Siklus abadi birokrasi!"
+            },
+            {
+                id: 36,
+                round: 2,
+                type: 'buzzer',
+                q: "Jika drone pengantar paket diangkat menjadi Menteri Logistik, apa musuh terbesarnya?",
+                a: "Benang layangan warga dan burung merpati yang teritorial.",
+                note: "Harus ada pengawalan khusus saat musim anak-anak main layangan."
+            },
+            {
+                id: 37,
+                round: 2,
+                type: 'buzzer',
+                q: "Apa yang terjadi jika asisten suara (Siri / Google Assistant) dijadikan Juru Bicara Istana?",
+                a: "Setiap ditanya wartawan soal isu sensitif, jawabannya: 'Maaf, saya kurang mengerti maksud Anda.'",
+                note: "Atau tiba-tiba menjawab: 'Berikut hasil pencarian web untuk: Cara menghindar dari pertanyaan wartawan.'"
+            },
+            {
+                id: 38,
+                round: 2,
+                type: 'buzzer',
+                q: "Mengapa ruang server kementerian selalu bersuhu 16 derajat Celcius?",
+                a: "Bukan cuma buat mendinginkan server, tapi tempat ngadem staf kalau AC ruangan luar mati.",
+                note: "Tempat persembunyian paling favorit saat cuaca siang hari sedang panas-panasnya."
+            },
+            {
+                id: 39,
+                round: 2,
+                type: 'buzzer',
+                q: "Jika aplikasi kencan online diambil alih oleh Dinas Kependudukan, apa fitur terbarunya?",
+                a: "Swipe kanan langsung terbit Buku Nikah dan Kartu Keluarga otomatis!",
+                note: "Tidak ada lagi istilah ghosting karena langsung terpantau oleh RT/RW setempat."
+            },
+            {
+                id: 40,
+                round: 2,
+                type: 'buzzer',
+                q: "Kenapa programmer pemerintah jarang mau disuruh membetulkan kulkas atau AC di kantor?",
+                a: "Karena meskipun sama-sama anak IT, kulkas tidak punya tombol CTRL+ALT+DEL!",
+                note: "Nasib lulusan Teknik Informatika: di mata keluarga dan kantor dianggap tukang servis segala barang elektronik."
+            },
+
+            // === BABAK 3: 10 SOAL FINAL PEREBUTAN PRESIDEN (SOAL 41 - 50) ===
+            {
+                id: 41,
+                round: 3,
+                type: 'final',
+                q: "1. Jika seluruh internet Indonesia mati selama 24 jam, bagaimana Presiden mengumumkan kebijakan baru?",
+                a: "Inspirasi Jawaban KPU: Menggunakan burung merpati ber-sertifikasi ISO, kentongan berantai dari Sabang sampai Merauke, atau menyewa mobil tahu bulat ('Kebijakan baru digoreng dadakan, lima ratusan, hangat-hangat!').",
+                note: "Bebas dinilai kreatif oleh Moderator! Semakin masuk akal secara komedi, langsung kasih +10 poin."
+            },
+            {
+                id: 42,
+                round: 3,
+                type: 'final',
+                q: "2. Jika AI mencalonkan diri menjadi Presiden, apakah kampanyenya dibuat menggunakan PowerPoint atau PowerPoint of View?",
+                a: "Inspirasi Jawaban KPU: Menggunakan 'PowerPoint of View' berformat PDF yang tidak bisa di-edit, lengkap dengan jari tangan yang jumlahnya 6 khas gambar buatan AI!",
+                note: "Pastikan peserta menjawab dalam 5 detik dengan argumen paling kocak."
+            },
+            {
+                id: 43,
+                round: 3,
+                type: 'final',
+                q: "3. Jika password negara adalah '123456', siapa yang harus bertanggung jawab?",
+                a: "Inspirasi Jawaban KPU: Yang bertanggung jawab adalah petugas yang menempelkan kertas Post-it bertuliskan 'Password Jangan Diganti Nanti Bapak Lupa' di pojok monitor Istana!",
+                note: "Kombinasi password terkuat kedua setelah 'admin123' dan 'bismillah'."
+            },
+            {
+                id: 44,
+                round: 3,
+                type: 'final',
+                q: "4. Jika semua komputer pemerintahan terkena ransomware, apakah Menteri Keuangan harus membayar pakai uang kas atau saldo e-wallet?",
+                a: "Inspirasi Jawaban KPU: Bayar pakai PayLater atau minta hacker-nya scan QRIS UMKM dulu, lalu potong pajak PPh 23 supaya hacker-nya bingung sendiri!",
+                note: "Atau tawarkan pembayaran menggunakan koin cokelat dan poin belanja minimarket."
+            },
+            {
+                id: 45,
+                round: 3,
+                type: 'final',
+                q: "5. Jika Google menjadi Menteri Dalam Negeri, apakah semua penduduk wajib mengaktifkan Location?",
+                a: "Inspirasi Jawaban KPU: Wajib! Supaya ketahuan siapa warga yang bilang 'Sudah OTW' padahal masih baru bangun tidur dan handukan di kamar!",
+                note: "Kebohongan 'Sudah di jalan' resmi menjadi pelanggaran administrasi negara."
+            },
+            {
+                id: 46,
+                round: 3,
+                type: 'final',
+                q: "6. Jika hacker berhasil meretas kalender Presiden, apakah dia bisa mengubah tanggal merah menjadi setiap hari?",
+                a: "Inspirasi Jawaban KPU: Bisa! Tapi hari Senin tetap dibuat warna abu-abu dengan status 'Libur Nasional Tapi Tetap Wajib Zoom Meeting'.",
+                note: "Jika tanggal merah setiap hari, maka gajian pun ikut mundur ke tahun depan."
+            },
+            {
+                id: 47,
+                round: 3,
+                type: 'final',
+                q: "7. Jika robot menjadi Gubernur, apakah saat menghadapi demo warga dia akan mengalami overheating?",
+                a: "Inspirasi Jawaban KPU: Iya, kipas di punggungnya langsung bunyi 'Nginggg!' kencang, lalu minta disiram es teh manis plastik oleh pendemo agar suhunya turun!",
+                note: "Pendemo dan Gubernur Robot akhirnya minum es teh bersama di depan balai kota."
+            },
+            {
+                id: 48,
+                round: 3,
+                type: 'final',
+                q: "8. Jika listrik padam saat sidang kabinet malam hari, siapa yang paling cepat berubah menjadi senter?",
+                a: "Inspirasi Jawaban KPU: Layar HP pejabat yang tingkat kecerahannya (brightness) selalu 100% rata kanan dengan ukuran font raksasa!",
+                note: "Satu layar HP bapak-bapak bisa menerangi seluruh ruang rapat paripurna."
+            },
+            {
+                id: 49,
+                round: 3,
+                type: 'final',
+                q: "9. Jika semua pejabat wajib bisa coding, apakah rakyat harus menunggu pemerintah selesai compile?",
+                a: "Inspirasi Jawaban KPU: Benar! Rakyat harus sabar menunggu karena kurang satu titik koma (semicolon ';') pada baris ke-9.420 di Undang-Undang Cipta Koding!",
+                note: "'Maaf Bapak/Ibu, bantuan sosial belum cair karena masih Syntax Error di fungsi pembagian beras.'"
+            },
+            {
+                id: 50,
+                round: 3,
+                type: 'final',
+                q: "10. Jika kamu menjadi Presiden Digital, satu kebijakan teknologi paling absurd apa yang akan kamu buat?",
+                a: "Inspirasi Jawaban KPU: Mewajibkan seluruh rapat maksimal 10 menit, melarang kirim pesan 'P' tanpa salam, dan memberikan tunjangan kuota malam bagi warga yang galau!",
+                note: "Pertanyaan penutup puncak! Berikan +10 poin pada visi-misi Presiden Digital paling mengocok perut!"
+            }
+        ];
+
+        /* -----------------------------------------------------------
+           2. KONFIGURASI KELOMPOK, NAMA KOCAK & TEMA WARNA
+           ----------------------------------------------------------- */
+        const FUNNY_TEAM_NAMES = [
+            "Partai Wi-Fi Gratis",
+            "Koalisi Anti Lag",
+            "Fraksi Kebanyakan Tab",
+            "Aliansi Lupa Save",
+            "Partai Server Pusat",
+            "Koalisi Kabel LAN",
+            "Fraksi Wi-Fi Tetangga",
+            "Aliansi Restart Nasional",
+            "Partai Kuota Malam",
+            "Koalisi Layar Retak",
+            "Fraksi Baterai 1%",
+            "Aliansi Typo Nasional",
+            "Partai Blue Screen",
+            "Koalisi Admin Grup WA",
+            "Fraksi Lupa Password",
+            "Aliansi Copy Paste"
+        ];
+
+        const TEAM_PRESETS = [
+            {
+                id: 0,
+                defaultName: "Partai Server Pusat",
+                key: "A",
+                colorBg: "from-cyan-500 to-blue-600",
+                borderClass: "border-cyan-400",
+                textClass: "text-cyan-400",
+                badgeBg: "bg-cyan-500",
+                freq: 523.25 // C5
+            },
+            {
+                id: 1,
+                defaultName: "Koalisi Kabel LAN",
+                key: "L",
+                colorBg: "from-amber-400 to-orange-600",
+                borderClass: "border-amber-400",
+                textClass: "text-amber-400",
+                badgeBg: "bg-amber-400",
+                freq: 659.25 // E5
+            },
+            {
+                id: 2,
+                defaultName: "Fraksi Wi-Fi Tetangga",
+                key: "Q",
+                colorBg: "from-emerald-400 to-teal-600",
+                borderClass: "border-emerald-400",
+                textClass: "text-emerald-400",
+                badgeBg: "bg-emerald-400",
+                freq: 783.99 // G5
+            },
+            {
+                id: 3,
+                defaultName: "Aliansi Restart Nasional",
+                key: "P",
+                colorBg: "from-pink-500 to-rose-600",
+                borderClass: "border-pink-400",
+                textClass: "text-pink-400",
+                badgeBg: "bg-pink-500",
+                freq: 987.77 // B5
+            }
+        ];
+
+        const CABINET_TITLES = [
+            { rank: 1, icon: "👑", title: "Presiden Digital", subtitle: "Juara 1 • Pemegang Password Utama Istana", badgeClass: "from-amber-400 to-yellow-600 text-slate-950" },
+            { rank: 2, icon: "💻", title: "Menteri IT", subtitle: "Juara 2 • Panglima Coding & Jaringan", badgeClass: "from-cyan-400 to-blue-500 text-slate-950" },
+            { rank: 3, icon: "🛡️", title: "Menteri Cyber Security", subtitle: "Juara 3 • Penjaga Firewall & Anti-Phishing", badgeClass: "from-emerald-400 to-teal-500 text-slate-950" },
+            { rank: 4, icon: "🔌", title: "Menteri Restart Nasional", subtitle: "Penghargaan Khusus • Spesialis Cabut-Colok Router", badgeClass: "from-pink-500 to-rose-500 text-white" }
+        ];
+
+        /* -----------------------------------------------------------
+           3. STATE PERMAINAN
+           ----------------------------------------------------------- */
+        let state = {
+            teamCount: 2,
+            gameMode: 'full', // 'full' (50), 'quick' (15), 'round1' (10)
+            soundEnabled: true,
+            autoAdvanceEnabled: true,
+            inGame: false,
+            teams: [],
+            questions: [],
+            currentQIndex: 0,
+            activeTeamIndex: null,
+            failedTeamsInCurrentQ: [],
+            selectedMcqOption: null,
+            answerRevealed: false,
+            timerInterval: null,
+            timeLeft: 5.0,
+            autoAdvanceInterval: null,
+            autoAdvanceTimeLeft: 2.5
+        };
+
+        /* -----------------------------------------------------------
+           4. WEB AUDIO API SYNTHESIZER (TANPA FILE EKSTERNAL)
+           ----------------------------------------------------------- */
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (AudioContext) {
+                    audioCtx = new AudioContext();
+                }
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function toggleSound() {
+            state.soundEnabled = !state.soundEnabled;
+            const icon = document.getElementById('iconSound');
+            const text = document.getElementById('textSound');
+            const btn = document.getElementById('btnMute');
+
+            if (state.soundEnabled) {
+                icon.className = 'fa-solid fa-volume-high';
+                text.textContent = 'Suara Aktif';
+                btn.classList.replace('text-slate-400', 'text-cyan-400');
+                playSound('tick');
+            } else {
+                icon.className = 'fa-solid fa-volume-xmark';
+                text.textContent = 'Suara Mati';
+                btn.classList.replace('text-cyan-400', 'text-slate-400');
+            }
+        }
+
+        function playSound(type, customFreq = 523.25) {
+            if (!state.soundEnabled) return;
+            try {
+                initAudio();
+                if (!audioCtx) return;
+
+                const now = audioCtx.currentTime;
+
+                if (type === 'buzz') {
+                    // Futuristic Game Show Buzzer Tone
+                    const osc1 = audioCtx.createOscillator();
+                    const osc2 = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc1.type = 'sawtooth';
+                    osc2.type = 'triangle';
+                    osc1.frequency.setValueAtTime(customFreq, now);
+                    osc1.frequency.exponentialRampToValueAtTime(customFreq * 1.25, now + 0.18);
+                    osc2.frequency.setValueAtTime(customFreq * 0.5, now);
+
+                    gain.gain.setValueAtTime(0.28, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+                    osc1.connect(gain);
+                    osc2.connect(gain);
+                    gain.connect(audioCtx.destination);
+
+                    osc1.start(now);
+                    osc2.start(now);
+                    osc1.stop(now + 0.35);
+                    osc2.stop(now + 0.35);
+                } 
+                else if (type === 'tick') {
+                    // Countdown Tick
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(880, now);
+                    gain.gain.setValueAtTime(0.12, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.06);
+                }
+                else if (type === 'urgentTick') {
+                    // Last 2 seconds higher pitch tick
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(1320, now);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.07);
+                }
+                else if (type === 'correct') {
+                    // Bright Chime Fanfare (+100 Poin)
+                    const notes = [523.25, 659.25, 783.99, 1046.50]; // C5 E5 G5 C6
+                    notes.forEach((n, idx) => {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(n, now + idx * 0.08);
+                        gain.gain.setValueAtTime(0.25, now + idx * 0.08);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.35);
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.start(now + idx * 0.08);
+                        osc.stop(now + idx * 0.08 + 0.35);
+                    });
+                }
+                else if (type === 'wrong' || type === 'timeout') {
+                    // Low Comedy Buzzer "Tett!"
+                    const osc1 = audioCtx.createOscillator();
+                    const osc2 = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc1.type = 'sawtooth';
+                    osc2.type = 'sawtooth';
+                    osc1.frequency.setValueAtTime(155, now);
+                    osc2.frequency.setValueAtTime(148, now); // dissonance
+                    osc1.frequency.linearRampToValueAtTime(110, now + 0.45);
+                    osc2.frequency.linearRampToValueAtTime(103, now + 0.45);
+
+                    gain.gain.setValueAtTime(0.28, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+
+                    osc1.connect(gain);
+                    osc2.connect(gain);
+                    gain.connect(audioCtx.destination);
+
+                    osc1.start(now);
+                    osc2.start(now);
+                    osc1.stop(now + 0.5);
+                    osc2.stop(now + 0.5);
+                }
+                else if (type === 'victory') {
+                    // Presidential Inauguration Fanfare
+                    const chord = [523.25, 659.25, 783.99, 987.77, 1046.50, 1318.51];
+                    chord.forEach((freq, idx) => {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.type = 'triangle';
+                        const startTime = now + idx * 0.11;
+                        osc.frequency.setValueAtTime(freq, startTime);
+                        gain.gain.setValueAtTime(0.22, startTime);
+                        gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.8);
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.start(startTime);
+                        osc.stop(startTime + 0.8);
+                    });
+                }
+            } catch (e) {
+                console.warn("Audio error:", e);
+            }
+        }
+
+        /* -----------------------------------------------------------
+           5. PENGATURAN AWAL (LOBBY PEMILU & PENGISIAN NAMA KELOMPOK)
+           ----------------------------------------------------------- */
+        function setTeamCount(count) {
+            // Preserve currently typed names before re-rendering
+            saveTypedNamesToState();
+            state.teamCount = count;
+            [2, 3, 4].forEach(c => {
+                const btn = document.getElementById(`btnCount${c}`);
+                if (c === count) {
+                    btn.className = "team-count-btn px-3.5 py-1.5 rounded-xl text-xs font-bold transition bg-cyan-500 text-slate-950 shadow";
+                } else {
+                    btn.className = "team-count-btn px-3.5 py-1.5 rounded-xl text-xs font-bold transition text-slate-300 hover:text-white";
+                }
+            });
+            renderTeamInputs();
+        }
+
+        function saveTypedNamesToState() {
+            for (let i = 0; i < 4; i++) {
+                const inputEl = document.getElementById(`inputTeamName_${i}`);
+                if (inputEl) {
+                    if (!state.teams[i]) {
+                        state.teams[i] = { ...TEAM_PRESETS[i], name: inputEl.value, score: 0 };
+                    } else {
+                        state.teams[i].name = inputEl.value;
+                    }
+                }
+            }
+        }
+
+        function renderTeamInputs() {
+            const container = document.getElementById('teamInputsContainer');
+            container.innerHTML = '';
+
+            for (let i = 0; i < state.teamCount; i++) {
+                const preset = TEAM_PRESETS[i];
+                const existingVal = state.teams[i] && state.teams[i].name !== undefined ? state.teams[i].name : preset.defaultName;
+
+                const card = document.createElement('div');
+                card.className = `p-4 rounded-2xl bg-slate-800/90 border-2 ${preset.borderClass}/60 space-y-2.5 shadow-lg`;
+                card.innerHTML = `
+                    <div class="flex items-center justify-between text-xs font-bold">
+                        <label for="inputTeamName_${i}" class="${preset.textClass} flex items-center gap-1.5 cursor-pointer">
+                            <i class="fa-solid fa-flag"></i> NAMA KELOMPOK ${i + 1}
+                        </label>
+                        <span class="px-2 py-0.5 rounded bg-slate-900 text-slate-300 border border-slate-700">
+                            Shortcut [${preset.key}]
+                        </span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="text" id="inputTeamName_${i}" value="${existingVal}" maxlength="28"
+                            placeholder="Ketik nama kelompok ${i + 1}..."
+                            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-600 text-white font-bold text-sm focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 transition">
+                        <button type="button" onclick="randomizeSingleTeamName(${i})" title="Acak Nama Kocak"
+                            class="shrink-0 w-10 h-10 rounded-xl bg-slate-900 hover:bg-slate-700 border border-slate-600 text-amber-400 flex items-center justify-center transition">
+                            <i class="fa-solid fa-dice"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            }
+        }
+
+        function randomizeSingleTeamName(teamIdx) {
+            initAudio();
+            playSound('tick');
+            const inputEl = document.getElementById(`inputTeamName_${teamIdx}`);
+            if (!inputEl) return;
+
+            // Gather currently used names to avoid duplicates
+            const usedNames = [];
+            for (let i = 0; i < state.teamCount; i++) {
+                const el = document.getElementById(`inputTeamName_${i}`);
+                if (el) usedNames.push(el.value.trim());
+            }
+
+            const available = FUNNY_TEAM_NAMES.filter(n => !usedNames.includes(n));
+            const pool = available.length > 0 ? available : FUNNY_TEAM_NAMES;
+            const randomPick = pool[Math.floor(Math.random() * pool.length)];
+
+            inputEl.value = randomPick;
+            if (state.teams[teamIdx]) {
+                state.teams[teamIdx].name = randomPick;
+            }
+        }
+
+        function randomizeAllTeamNames() {
+            initAudio();
+            playSound('tick');
+            const shuffled = [...FUNNY_TEAM_NAMES].sort(() => 0.5 - Math.random());
+            for (let i = 0; i < state.teamCount; i++) {
+                const inputEl = document.getElementById(`inputTeamName_${i}`);
+                if (inputEl) {
+                    inputEl.value = shuffled[i];
+                }
+                if (state.teams[i]) {
+                    state.teams[i].name = shuffled[i];
+                }
+            }
+        }
+
+        function openEditTeamsModal() {
+            const container = document.getElementById('modalEditTeamsContainer');
+            container.innerHTML = '';
+
+            state.teams.forEach((team, idx) => {
+                const row = document.createElement('div');
+                row.className = "space-y-1";
+                row.innerHTML = `
+                    <label class="text-xs font-bold ${team.textClass} flex items-center justify-between">
+                        <span>Kelompok ${idx + 1} (Tombol [${team.key}])</span>
+                        <span>Skor saat ini: ${team.score} poin</span>
+                    </label>
+                    <div class="flex items-center gap-2">
+                        <input type="text" id="modalInputTeam_${idx}" value="${team.name}" maxlength="28"
+                            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white font-bold text-sm focus:outline-none focus:border-cyan-400">
+                        <button type="button" onclick="randomizeModalTeamName(${idx})" class="shrink-0 px-3 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-amber-300 text-xs font-bold" title="Acak Nama">
+                            🎲
+                        </button>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+
+            document.getElementById('modalEditTeams').classList.remove('hidden');
+        }
+
+        function randomizeModalTeamName(idx) {
+            const inputEl = document.getElementById(`modalInputTeam_${idx}`);
+            if (!inputEl) return;
+            const randomPick = FUNNY_TEAM_NAMES[Math.floor(Math.random() * FUNNY_TEAM_NAMES.length)];
+            inputEl.value = randomPick;
+        }
+
+        function closeEditTeamsModal() {
+            document.getElementById('modalEditTeams').classList.add('hidden');
+        }
+
+        function saveEditedTeamNames() {
+            state.teams.forEach((team, idx) => {
+                const inputEl = document.getElementById(`modalInputTeam_${idx}`);
+                if (inputEl && inputEl.value.trim()) {
+                    team.name = inputEl.value.trim();
+                }
+            });
+            closeEditTeamsModal();
+            renderScoreboard();
+            renderBuzzers();
+            if (state.activeTeamIndex !== null) {
+                const activeTeam = state.teams[state.activeTeamIndex];
+                document.getElementById('activeTeamNameDisplay').textContent = `${activeTeam.name} (Tombol ${activeTeam.key})`;
+            }
+        }
+
+        function selectGameMode(mode) {
+            state.gameMode = mode;
+            ['full', 'quick', 'round1'].forEach(m => {
+                const card = document.getElementById(`modeCard_${m}`);
+                if (m === mode) {
+                    card.className = "mode-card cursor-pointer block p-4 rounded-2xl border-2 border-cyan-500 bg-cyan-950/30 transition";
+                } else {
+                    card.className = "mode-card cursor-pointer block p-4 rounded-2xl border-2 border-slate-700 bg-slate-800/40 hover:border-slate-600 transition";
+                }
+            });
+        }
+
+        /* -----------------------------------------------------------
+           6. MEMULAI PERMAINAN & RENDER ARENA
+           ----------------------------------------------------------- */
+        function startGame() {
+            initAudio();
+            playSound('correct');
+
+            // 1. Collect Team Names
+            state.teams = [];
+            for (let i = 0; i < state.teamCount; i++) {
+                const inputEl = document.getElementById(`inputTeamName_${i}`);
+                const rawName = inputEl && inputEl.value.trim() ? inputEl.value.trim() : TEAM_PRESETS[i].defaultName;
+                state.teams.push({
+                    ...TEAM_PRESETS[i],
+                    name: rawName,
+                    score: 0
+                });
+            }
+
+            // 2. Filter Questions by Mode
+            if (state.gameMode === 'full') {
+                state.questions = [...ALL_50_QUESTIONS];
+            } else if (state.gameMode === 'quick') {
+                // 5 from Round 1, 5 from Round 2, 5 from Round 3
+                const r1 = ALL_50_QUESTIONS.filter(q => q.round === 1).slice(0, 5);
+                const r2 = ALL_50_QUESTIONS.filter(q => q.round === 2).slice(0, 5);
+                const r3 = ALL_50_QUESTIONS.filter(q => q.round === 3).slice(0, 5);
+                state.questions = [...r1, ...r2, ...r3];
+            } else {
+                // Round 1 simulation (10 MCQ)
+                state.questions = ALL_50_QUESTIONS.filter(q => q.round === 1);
+            }
+
+            state.currentQIndex = 0;
+            state.inGame = true;
+
+            // 3. Switch Screens
+            document.getElementById('screenSetup').classList.add('hidden');
+            document.getElementById('screenVictory').classList.add('hidden');
+            document.getElementById('screenGame').classList.remove('hidden');
+            document.getElementById('btnHome').classList.remove('hidden');
+            document.getElementById('btnQuestionList').classList.remove('hidden');
+            document.getElementById('btnEditTeams').classList.remove('hidden');
+
+            stopConfetti();
+            renderScoreboard();
+            renderBuzzers();
+            loadQuestion(0);
+            populateQuestionIndexModal();
+        }
+
+        function getCurrentRankInfo(teamId) {
+            // Sort teams descending by score to assign live provisional titles
+            const sorted = [...state.teams].sort((a, b) => b.score - a.score);
+            const rankIdx = sorted.findIndex(t => t.id === teamId);
+            return CABINET_TITLES[rankIdx] || CABINET_TITLES[3];
+        }
+
+        function renderScoreboard() {
+            const grid = document.getElementById('scoreboardGrid');
+            grid.innerHTML = '';
+
+            // Adjust columns dynamically
+            grid.className = `grid grid-cols-2 ${state.teamCount === 3 ? 'lg:grid-cols-3' : state.teamCount === 4 ? 'lg:grid-cols-4' : 'lg:grid-cols-2'} gap-3 sm:gap-4`;
+
+            state.teams.forEach((team, idx) => {
+                const rankInfo = getCurrentRankInfo(team.id);
+                const isResponding = state.activeTeamIndex === idx;
+
+                const card = document.createElement('div');
+                card.className = `relative rounded-2xl bg-slate-900/95 border-2 p-3.5 sm:p-4 transition-all ${
+                    isResponding ? 'active-team-glow' : 'border-slate-700/90'
+                }`;
+
+                card.innerHTML = `
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="min-w-0">
+                            <span class="inline-flex items-center gap-1 text-[11px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-md bg-slate-800 ${team.textClass} border border-slate-700">
+                                ${rankInfo.icon} ${rankInfo.title}
+                            </span>
+                            <h4 class="font-display font-bold text-sm sm:text-base text-white truncate mt-1" title="${team.name}">
+                                ${team.name}
+                            </h4>
+                        </div>
+                        <span class="text-xs font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700 shrink-0">
+                            [${team.key}]
+                        </span>
+                    </div>
+
+                    <div class="mt-3 flex items-end justify-between">
+                        <div class="font-display text-2xl sm:text-3xl font-black ${team.textClass} tabular-nums">
+                            ${team.score} <span class="text-xs font-semibold text-slate-400">poin</span>
+                        </div>
+
+                        <!-- Manual Moderator Score Adjusters (+/- 10 Poin) -->
+                        <div class="flex items-center gap-1">
+                            <button onclick="adjustScore(${idx}, -10)" class="px-2 h-7 rounded-lg bg-slate-800 hover:bg-rose-950 text-slate-400 hover:text-rose-300 border border-slate-700 text-xs font-bold transition" title="Kurangi 10 Poin">
+                                -10
+                            </button>
+                            <button onclick="adjustScore(${idx}, 10)" class="px-2 h-7 rounded-lg bg-slate-800 hover:bg-emerald-950 text-slate-400 hover:text-emerald-300 border border-slate-700 text-xs font-bold transition" title="Tambah 10 Poin">
+                                +10
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function adjustScore(teamIdx, delta) {
+            state.teams[teamIdx].score = Math.max(0, state.teams[teamIdx].score + delta);
+            renderScoreboard();
+        }
+
+        function renderBuzzers() {
+            const grid = document.getElementById('buzzersGrid');
+            grid.innerHTML = '';
+            grid.className = `grid grid-cols-2 ${state.teamCount === 3 ? 'lg:grid-cols-3' : state.teamCount === 4 ? 'lg:grid-cols-4' : 'lg:grid-cols-2'} gap-4 pt-1`;
+
+            state.teams.forEach((team, idx) => {
+                const isLockedOut = state.failedTeamsInCurrentQ.includes(idx);
+                const someoneElseActive = state.activeTeamIndex !== null && state.activeTeamIndex !== idx;
+                const isDisabled = isLockedOut || someoneElseActive;
+
+                const btn = document.createElement('button');
+                btn.id = `buzzerBtn_${idx}`;
+                btn.disabled = isDisabled;
+                btn.onclick = () => triggerBuzzer(idx);
+                btn.className = `buzzer-btn w-full py-4 sm:py-5 px-4 rounded-2xl bg-gradient-to-b ${team.colorBg} text-slate-950 font-display font-black text-center flex flex-col items-center justify-center gap-1 border-2 border-white/25 ${
+                    state.activeTeamIndex === idx ? 'ring-4 ring-amber-400 scale-[1.02]' : ''
+                }`;
+
+                btn.innerHTML = `
+                    <div class="flex items-center gap-2 text-base sm:text-xl tracking-tight truncate max-w-full">
+                        <i class="fa-solid fa-bell"></i>
+                        <span class="truncate">${team.name}</span>
+                    </div>
+                    <span class="text-[11px] sm:text-xs font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-slate-950/25 text-white">
+                        ${isLockedOut ? '❌ SUDAH MENJAWAB' : `TEKAN [${team.key}] / SENTUH`}
+                    </span>
+                `;
+                grid.appendChild(btn);
+            });
+        }
+
+        /* -----------------------------------------------------------
+           7. MEMUAT SOAL & PILIHAN GANDA
+           ----------------------------------------------------------- */
+        function loadQuestion(index) {
+            clearTimer();
+            cancelAutoAdvance();
+            state.currentQIndex = index;
+            state.activeTeamIndex = null;
+            state.failedTeamsInCurrentQ = [];
+            state.selectedMcqOption = null;
+            state.answerRevealed = false;
+
+            const qObj = state.questions[index];
+            const total = state.questions.length;
+
+            // Update Header & Progress
+            document.getElementById('qCurrentNum').textContent = index + 1;
+            document.getElementById('qTotalNum').textContent = total;
+            document.getElementById('qProgressBar').style.width = `${((index + 1) / total) * 100}%`;
+
+            // Update Round Banner
+            const badgeRound = document.getElementById('badgeRound');
+            const titleRound = document.getElementById('titleRound');
+            const qTypeTag = document.getElementById('qTypeTag');
+
+            if (qObj.round === 1) {
+                badgeRound.textContent = "BABAK 1";
+                badgeRound.className = "px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-cyan-500 text-slate-950";
+                titleRound.textContent = "Perebutan Kursi Kabinet • Pilihan Ganda (Soal 1–10)";
+                qTypeTag.textContent = `Pertanyaan #${qObj.id} • Pilihan Ganda Rebutan (+10 Poin)`;
+            } else if (qObj.round === 2) {
+                badgeRound.textContent = "BABAK 2";
+                badgeRound.className = "px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-amber-400 text-slate-950";
+                titleRound.textContent = "Pertanyaan Absurd Calon Pejabat (Soal 11–40)";
+                qTypeTag.textContent = `Pertanyaan #${qObj.id} • Rebutan Cepat 5 Detik (+10 Poin)`;
+            } else {
+                badgeRound.textContent = "BABAK 3 FINAL";
+                badgeRound.className = "px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-pink-500 text-white";
+                titleRound.textContent = "Debat Final Perebutan Kursi Presiden Digital (Soal 41–50)";
+                qTypeTag.textContent = `Pertanyaan #${qObj.id} • Debat Kreatif & Kocak (+10 Poin)`;
+            }
+
+            // Question Text
+            document.getElementById('questionText').textContent = qObj.q;
+
+            // Multiple Choice Options (Round 1 only)
+            const mcqContainer = document.getElementById('mcqOptionsContainer');
+            mcqContainer.innerHTML = '';
+            if (qObj.type === 'mcq' && qObj.options) {
+                mcqContainer.classList.remove('hidden');
+                qObj.options.forEach((optText, optIdx) => {
+                    const optBtn = document.createElement('button');
+                    optBtn.id = `mcqOpt_${optIdx}`;
+                    optBtn.onclick = () => handleMcqClick(optIdx);
+                    optBtn.className = "w-full text-left p-4 rounded-2xl bg-slate-800/90 hover:bg-slate-750 border-2 border-slate-700 hover:border-cyan-400/60 text-slate-100 font-semibold text-sm sm:text-base transition flex items-center justify-between gap-3";
+                    optBtn.innerHTML = `
+                        <span>${optText}</span>
+                        <span class="w-6 h-6 rounded-full border border-slate-600 flex items-center justify-center text-xs text-slate-400 shrink-0">
+                            ${['A', 'B', 'C', 'D'][optIdx]}
+                        </span>
+                    `;
+                    mcqContainer.appendChild(optBtn);
+                });
+            } else {
+                mcqContainer.classList.add('hidden');
+            }
+
+            // Reset Answer Box & Status Banner
+            document.getElementById('answerRevealBox').classList.add('hidden');
+            document.getElementById('textToggleAnswer').textContent = qObj.round === 3 ? "Tampilkan Inspirasi Jawaban KPU" : "Intip Kunci / Jawaban Lucu";
+            document.getElementById('answerTextContent').textContent = qObj.a;
+            document.getElementById('answerJokeNote').textContent = qObj.note || "";
+
+            hideStatusBanner();
+            document.getElementById('responderBanner').classList.add('hidden');
+
+            // Update Moderator Buttons
+            document.getElementById('btnJudgeCorrect').disabled = true;
+            document.getElementById('btnJudgeWrong').disabled = true;
+            document.getElementById('btnPrevQ').disabled = index === 0;
+            document.getElementById('btnPrevQ').classList.toggle('opacity-40', index === 0);
+
+            const nextBtn = document.getElementById('btnNextQ');
+            if (index === total - 1) {
+                nextBtn.innerHTML = `<span>Selesai & Lantik</span> <i class="fa-solid fa-trophy"></i>`;
+            } else {
+                nextBtn.innerHTML = `<span>Soal Lanjut</span> <i class="fa-solid fa-forward-step"></i>`;
+            }
+
+            renderScoreboard();
+            renderBuzzers();
+        }
+
+        function handleMcqClick(optIdx) {
+            const qObj = state.questions[state.currentQIndex];
+            if (!qObj || qObj.type !== 'mcq') return;
+
+            state.selectedMcqOption = optIdx;
+
+            // Highlight selected option
+            qObj.options.forEach((_, idx) => {
+                const btn = document.getElementById(`mcqOpt_${idx}`);
+                if (!btn) return;
+                if (idx === optIdx) {
+                    btn.className = "w-full text-left p-4 rounded-2xl bg-cyan-950/80 border-2 border-cyan-400 text-white font-bold text-sm sm:text-base transition flex items-center justify-between gap-3";
+                } else {
+                    btn.className = "w-full text-left p-4 rounded-2xl bg-slate-800/90 border-2 border-slate-700 text-slate-300 font-semibold text-sm sm:text-base transition flex items-center justify-between gap-3";
+                }
+            });
+
+            // If a team has buzzed in, Moderator can immediately see if it matches or auto-judge
+            if (state.activeTeamIndex !== null) {
+                if (optIdx === qObj.correctIndex) {
+                    judgeAnswer(true);
+                } else {
+                    judgeAnswer(false);
+                }
+            } else {
+                // Simulation mode click without buzzing first: show feedback
+                if (optIdx === qObj.correctIndex) {
+                    playSound('correct');
+                    showStatusBanner(`✅ Pilihan Tepat! (${qObj.a}) — Tekan Buzzer kelompok terlebih dahulu untuk menambah skor otomatis.`, 'success');
+                    if (!state.answerRevealed) toggleAnswerReveal();
+                } else {
+                    playSound('wrong');
+                    showStatusBanner(`❌ Kurang Tepat! Coba pilihan yang lebih absurd atau tekan Buzzer kelompok.`, 'error');
+                }
+            }
+        }
+
+        /* -----------------------------------------------------------
+           8. SISTEM REBUTAN (BUZZER) & TIMER 5 DETIK
+           ----------------------------------------------------------- */
+        function triggerBuzzer(teamIdx) {
+            if (!state.inGame) return;
+            if (state.activeTeamIndex !== null) return; // Someone already buzzed
+            if (state.failedTeamsInCurrentQ.includes(teamIdx)) return; // Already failed this question
+
+            cancelAutoAdvance();
+            const team = state.teams[teamIdx];
+            state.activeTeamIndex = teamIdx;
+
+            // Play Team's unique Buzzer Sound
+            playSound('buzz', team.freq);
+
+            // Show Active Responder Banner
+            const banner = document.getElementById('responderBanner');
+            banner.classList.remove('hidden');
+            document.getElementById('activeTeamNameDisplay').textContent = `${team.name} (Tombol ${team.key})`;
+
+            // Enable Moderator Judge Buttons
+            document.getElementById('btnJudgeCorrect').disabled = false;
+            document.getElementById('btnJudgeWrong').disabled = false;
+
+            hideStatusBanner();
+            renderScoreboard();
+            renderBuzzers();
+
+            // Start 5.0-second Countdown
+            startFiveSecondTimer();
+        }
+
+        function startFiveSecondTimer() {
+            clearTimer();
+            state.timeLeft = 5.0;
+            updateTimerUI();
+
+            let lastWholeSecond = 5;
+
+            state.timerInterval = setInterval(() => {
+                state.timeLeft = Math.max(0, +(state.timeLeft - 0.1).toFixed(1));
+                updateTimerUI();
+
+                const currentWhole = Math.ceil(state.timeLeft);
+                if (currentWhole < lastWholeSecond && currentWhole > 0) {
+                    lastWholeSecond = currentWhole;
+                    if (currentWhole <= 2) {
+                        playSound('urgentTick');
+                    } else {
+                        playSound('tick');
+                    }
+                }
+
+                if (state.timeLeft <= 0) {
+                    clearTimer();
+                    handleTimeOut();
+                }
+            }, 100);
+        }
+
+        function updateTimerUI() {
+            const numDisplay = document.getElementById('timerNumberDisplay');
+            const barFill = document.getElementById('timerBarFill');
+
+            numDisplay.textContent = `${state.timeLeft.toFixed(1)}s`;
+            const pct = (state.timeLeft / 5.0) * 100;
+            barFill.style.width = `${pct}%`;
+
+            if (state.timeLeft <= 2.0) {
+                numDisplay.classList.replace('text-amber-400', 'text-rose-500');
+            } else {
+                numDisplay.classList.replace('text-rose-500', 'text-amber-400');
+            }
+        }
+
+        function clearTimer() {
+            if (state.timerInterval) {
+                clearInterval(state.timerInterval);
+                state.timerInterval = null;
+            }
+        }
+
+        function handleTimeOut() {
+            playSound('timeout');
+            const timedOutTeam = state.teams[state.activeTeamIndex];
+            showStatusBanner(`⏰ WAKTU 5 DETIK HABIS untuk ${timedOutTeam ? timedOutTeam.name : 'Kelompok'}! Otomatis dinilai gagal & dilempar...`, 'warning');
+            // Automatically treat timeout as wrong/pass after a brief 0.8s beat so the game flows smoothly
+            setTimeout(() => {
+                if (state.activeTeamIndex !== null && state.timeLeft <= 0) {
+                    judgeAnswer(false);
+                }
+            }, 800);
+        }
+
+        /* -----------------------------------------------------------
+           9. PENILAIAN MODERATOR (BENAR +10 / SALAH LEMPAR & AUTO-ADVANCE)
+           ----------------------------------------------------------- */
+        function toggleAutoAdvanceMode() {
+            state.autoAdvanceEnabled = !state.autoAdvanceEnabled;
+            const btn = document.getElementById('btnToggleAutoNext');
+            const text = document.getElementById('textAutoNext');
+
+            if (state.autoAdvanceEnabled) {
+                btn.className = "px-3 py-2.5 rounded-xl bg-cyan-950/70 hover:bg-cyan-900/80 border border-cyan-500/50 text-xs sm:text-sm font-bold text-cyan-300 transition flex items-center gap-1.5";
+                text.textContent = "Auto-Lanjut: ON";
+            } else {
+                cancelAutoAdvance();
+                btn.className = "px-3 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs sm:text-sm font-semibold text-slate-400 transition flex items-center gap-1.5";
+                text.textContent = "Auto-Lanjut: OFF";
+            }
+        }
+
+        function triggerAutoAdvance(delaySeconds = 2.5) {
+            cancelAutoAdvance();
+            if (!state.autoAdvanceEnabled) return;
+
+            const banner = document.getElementById('autoAdvanceBanner');
+            const textEl = document.getElementById('autoAdvanceText');
+            const barEl = document.getElementById('autoAdvanceBar');
+
+            banner.classList.remove('hidden');
+            state.autoAdvanceTimeLeft = delaySeconds;
+            const totalTime = delaySeconds;
+            const isLastQuestion = state.currentQIndex >= state.questions.length - 1;
+
+            const updateAutoUI = () => {
+                const labelTarget = isLastQuestion ? "Pengumuman Pemenang Kabinet" : `Soal #${state.currentQIndex + 2}`;
+                textEl.textContent = `Otomatis lanjut ke ${labelTarget} dalam ${state.autoAdvanceTimeLeft.toFixed(1)} detik...`;
+                barEl.style.width = `${(state.autoAdvanceTimeLeft / totalTime) * 100}%`;
+            };
+
+            updateAutoUI();
+
+            state.autoAdvanceInterval = setInterval(() => {
+                state.autoAdvanceTimeLeft = Math.max(0, +(state.autoAdvanceTimeLeft - 0.1).toFixed(1));
+                updateAutoUI();
+
+                if (state.autoAdvanceTimeLeft <= 0) {
+                    cancelAutoAdvance();
+                    nextQuestion();
+                }
+            }, 100);
+        }
+
+        function cancelAutoAdvance() {
+            if (state.autoAdvanceInterval) {
+                clearInterval(state.autoAdvanceInterval);
+                state.autoAdvanceInterval = null;
+            }
+            const banner = document.getElementById('autoAdvanceBanner');
+            if (banner) {
+                banner.classList.add('hidden');
+            }
+        }
+
+        function judgeAnswer(isCorrect) {
+            if (state.activeTeamIndex === null) return;
+            clearTimer();
+
+            const teamIdx = state.activeTeamIndex;
+            const team = state.teams[teamIdx];
+            const qObj = state.questions[state.currentQIndex];
+
+            if (isCorrect) {
+                playSound('correct');
+                team.score += 10;
+                state.activeTeamIndex = null;
+
+                // Reveal answer automatically on correct
+                if (!state.answerRevealed) {
+                    toggleAnswerReveal();
+                }
+
+                // Highlight correct MCQ option if Round 1
+                if (qObj.type === 'mcq') {
+                    const correctBtn = document.getElementById(`mcqOpt_${qObj.correctIndex}`);
+                    if (correctBtn) {
+                        correctBtn.className = "w-full text-left p-4 rounded-2xl bg-emerald-950/90 border-2 border-emerald-400 text-white font-extrabold text-sm sm:text-base transition flex items-center justify-between gap-3";
+                    }
+                }
+
+                showStatusBanner(`🎉 MANTAP! +10 Poin untuk ${team.name}! Bersiap menuju soal berikutnya...`, 'success');
+                document.getElementById('responderBanner').classList.add('hidden');
+                document.getElementById('btnJudgeCorrect').disabled = true;
+                document.getElementById('btnJudgeWrong').disabled = true;
+
+                renderScoreboard();
+                renderBuzzers();
+
+                // Automatically advance to the next question
+                triggerAutoAdvance(2.4);
+            } else {
+                playSound('wrong');
+                state.failedTeamsInCurrentQ.push(teamIdx);
+                state.activeTeamIndex = null;
+
+                document.getElementById('responderBanner').classList.add('hidden');
+                document.getElementById('btnJudgeCorrect').disabled = true;
+                document.getElementById('btnJudgeWrong').disabled = true;
+
+                const remainingTeams = state.teamCount - state.failedTeamsInCurrentQ.length;
+                if (remainingTeams > 0) {
+                    showStatusBanner(`❌ Jawaban ${team.name} kurang tepat! Kesempatan dilempar ke ${remainingTeams} kelompok lainnya — Silakan Tekan Buzzer!`, 'error');
+                    renderScoreboard();
+                    renderBuzzers();
+                } else {
+                    showStatusBanner(`😅 Semua kelompok sudah mencoba menjawab! Mari simak kunci jawaban KPU sebelum lanjut otomatis.`, 'warning');
+                    if (!state.answerRevealed) {
+                        toggleAnswerReveal();
+                    }
+                    renderScoreboard();
+                    renderBuzzers();
+
+                    // All teams have answered for this question -> auto-advance to next question
+                    triggerAutoAdvance(3.0);
+                }
+            }
+        }
+
+        function resetBuzzersForCurrentQuestion() {
+            clearTimer();
+            cancelAutoAdvance();
+            state.activeTeamIndex = null;
+            state.failedTeamsInCurrentQ = [];
+            document.getElementById('responderBanner').classList.add('hidden');
+            document.getElementById('btnJudgeCorrect').disabled = true;
+            document.getElementById('btnJudgeWrong').disabled = true;
+            hideStatusBanner();
+            renderScoreboard();
+            renderBuzzers();
+        }
+
+        function toggleAnswerReveal() {
+            state.answerRevealed = !state.answerRevealed;
+            const box = document.getElementById('answerRevealBox');
+            const text = document.getElementById('textToggleAnswer');
+
+            if (state.answerRevealed) {
+                box.classList.remove('hidden');
+                text.textContent = "Sembunyikan Kunci Jawaban";
+            } else {
+                box.classList.add('hidden');
+                text.textContent = "Intip Kunci / Jawaban Lucu";
+            }
+        }
+
+        function showStatusBanner(msg, type) {
+            const banner = document.getElementById('statusMessageBanner');
+            banner.classList.remove('hidden');
+            banner.textContent = msg;
+
+            if (type === 'success') {
+                banner.className = "rounded-2xl p-3.5 text-center font-bold text-sm sm:text-base border bg-emerald-950/70 border-emerald-500/60 text-emerald-200";
+            } else if (type === 'error') {
+                banner.className = "rounded-2xl p-3.5 text-center font-bold text-sm sm:text-base border bg-rose-950/70 border-rose-500/60 text-rose-200";
+            } else {
+                banner.className = "rounded-2xl p-3.5 text-center font-bold text-sm sm:text-base border bg-amber-950/70 border-amber-500/60 text-amber-200";
+            }
+        }
+
+        function hideStatusBanner() {
+            document.getElementById('statusMessageBanner').classList.add('hidden');
+        }
+
+        /* -----------------------------------------------------------
+           10. NAVIGASI SOAL & BABAK
+           ----------------------------------------------------------- */
+        function nextQuestion() {
+            if (state.currentQIndex < state.questions.length - 1) {
+                loadQuestion(state.currentQIndex + 1);
+            } else {
+                showVictoryScreen();
+            }
+        }
+
+        function prevQuestion() {
+            if (state.currentQIndex > 0) {
+                loadQuestion(state.currentQIndex - 1);
+            }
+        }
+
+        function jumpToRound(roundNum) {
+            const targetIdx = state.questions.findIndex(q => q.round === roundNum);
+            if (targetIdx !== -1) {
+                loadQuestion(targetIdx);
+            }
+        }
+
+        /* -----------------------------------------------------------
+           11. LAYAR KEMENANGAN & PELANTIKAN KABINET 2045
+           ----------------------------------------------------------- */
+        function showVictoryScreen() {
+            clearTimer();
+            cancelAutoAdvance();
+            state.inGame = false;
+            playSound('victory');
+
+            document.getElementById('screenGame').classList.add('hidden');
+            document.getElementById('screenVictory').classList.remove('hidden');
+
+            const sortedTeams = [...state.teams].sort((a, b) => b.score - a.score);
+            const podiumGrid = document.getElementById('victoryPodiumGrid');
+            podiumGrid.innerHTML = '';
+
+            podiumGrid.className = `grid grid-cols-1 md:grid-cols-2 ${state.teamCount === 3 ? 'lg:grid-cols-3' : state.teamCount === 4 ? 'lg:grid-cols-4' : 'lg:grid-cols-2'} gap-5 max-w-5xl mx-auto`;
+
+            sortedTeams.forEach((team, idx) => {
+                const titleInfo = CABINET_TITLES[idx] || CABINET_TITLES[3];
+                const isFirst = idx === 0;
+
+                const card = document.createElement('div');
+                card.className = `relative rounded-3xl p-6 flex flex-col justify-between border-2 transition transform hover:-translate-y-1 ${
+                    isFirst 
+                    ? 'bg-gradient-to-b from-amber-500/20 via-slate-900 to-slate-900 border-amber-400 shadow-2xl shadow-amber-500/20' 
+                    : 'bg-slate-900/90 border-slate-700 shadow-xl'
+                }`;
+
+                card.innerHTML = `
+                    <div class="space-y-4 text-center">
+                        <div class="inline-block px-3.5 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-gradient-to-r ${titleInfo.badgeClass}">
+                            ${isFirst ? '🏆 PEMENANG UTAMA' : `PERINGKAT #${idx + 1}`}
+                        </div>
+
+                        <div class="text-6xl my-2 select-none">${titleInfo.icon}</div>
+
+                        <div>
+                            <h3 class="font-display text-2xl font-black text-white">${titleInfo.title}</h3>
+                            <p class="text-xs text-slate-400 mt-1">${titleInfo.subtitle}</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-slate-800 text-center space-y-1">
+                        <div class="text-xs font-bold uppercase tracking-wider text-slate-400">Diduduki Oleh:</div>
+                        <div class="font-display text-xl font-extrabold ${team.textClass}">${team.name}</div>
+                        <div class="font-display text-3xl font-black text-white pt-1">${team.score} <span class="text-sm font-normal text-slate-400">Poin</span></div>
+                    </div>
+                `;
+                podiumGrid.appendChild(card);
+            });
+
+            startConfetti();
+        }
+
+        function returnToGameFromVictory() {
+            stopConfetti();
+            state.inGame = true;
+            document.getElementById('screenVictory').classList.add('hidden');
+            document.getElementById('screenGame').classList.remove('hidden');
+        }
+
+        function copyCabinetReport() {
+            const sortedTeams = [...state.teams].sort((a, b) => b.score - a.score);
+            let report = "🏛️ HASIL SIDANG KPU: KABINET REPUBLIK TEKNOLOGI 2045 🏛️\n";
+            report += "====================================================\n\n";
+            sortedTeams.forEach((t, idx) => {
+                const titleInfo = CABINET_TITLES[idx] || CABINET_TITLES[3];
+                report += `${titleInfo.icon} ${titleInfo.title}: ${t.name} (${t.score} Poin)\n`;
+            });
+            report += "\nDitetapkan oleh Komisi Pemilihan Umum Republik Teknologi 2045.";
+
+            const tempArea = document.createElement('textarea');
+            tempArea.value = report;
+            document.body.appendChild(tempArea);
+            tempArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempArea);
+
+            const btn = document.getElementById('btnCopyReport');
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-check"></i> <span>Berita Acara Tersalin!</span>`;
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+            }, 2500);
+        }
+
+        /* -----------------------------------------------------------
+           12. MODAL & KEYBOARD SHORTCUT HANDLERS
+           ----------------------------------------------------------- */
+        function toggleRulesModal() {
+            const modal = document.getElementById('modalRules');
+            modal.classList.toggle('hidden');
+        }
+
+        function toggleQuestionListModal() {
+            const modal = document.getElementById('modalQuestionList');
+            modal.classList.toggle('hidden');
+            if (!modal.classList.contains('hidden')) {
+                populateQuestionIndexModal();
+            }
+        }
+
+        function populateQuestionIndexModal() {
+            const container = document.getElementById('questionIndexContainer');
+            container.innerHTML = '';
+
+            state.questions.forEach((qObj, idx) => {
+                const isCurrent = idx === state.currentQIndex;
+                const item = document.createElement('button');
+                item.onclick = () => {
+                    loadQuestion(idx);
+                    toggleQuestionListModal();
+                };
+                item.className = `w-full text-left p-3 rounded-xl border transition flex items-center justify-between gap-3 ${
+                    isCurrent 
+                    ? 'bg-cyan-950/60 border-cyan-400 text-white font-bold' 
+                    : 'bg-slate-800/60 hover:bg-slate-800 border-slate-700/80 text-slate-300'
+                }`;
+
+                const roundBadgeColor = qObj.round === 1 ? 'bg-cyan-500/20 text-cyan-300' : qObj.round === 2 ? 'bg-amber-500/20 text-amber-300' : 'bg-pink-500/20 text-pink-300';
+
+                item.innerHTML = `
+                    <div class="flex items-center gap-3 min-w-0">
+                        <span class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-700 flex items-center justify-center text-xs font-extrabold shrink-0">
+                            ${idx + 1}
+                        </span>
+                        <span class="truncate text-xs sm:text-sm">${qObj.q}</span>
+                    </div>
+                    <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded ${roundBadgeColor} shrink-0">
+                        Babak ${qObj.round}
+                    </span>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function confirmResetToHome() {
+            document.getElementById('modalConfirmReset').classList.remove('hidden');
+        }
+
+        function closeConfirmReset() {
+            document.getElementById('modalConfirmReset').classList.add('hidden');
+        }
+
+        function resetToSetupScreen() {
+            clearTimer();
+            cancelAutoAdvance();
+            stopConfetti();
+            state.inGame = false;
+            closeConfirmReset();
+
+            document.getElementById('screenGame').classList.add('hidden');
+            document.getElementById('screenVictory').classList.add('hidden');
+            document.getElementById('btnHome').classList.add('hidden');
+            document.getElementById('btnQuestionList').classList.add('hidden');
+            document.getElementById('btnEditTeams').classList.add('hidden');
+            document.getElementById('screenSetup').classList.remove('hidden');
+
+            renderTeamInputs();
+        }
+
+        // Listen for Keyboard Buzzer Shortcuts (A, L, Q, P)
+        window.addEventListener('keydown', (e) => {
+            if (!state.inGame) return;
+            if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+
+            const keyUpper = e.key.toUpperCase();
+            state.teams.forEach((team, idx) => {
+                if (keyUpper === team.key) {
+                    e.preventDefault();
+                    triggerBuzzer(idx);
+                }
+            });
+        });
+
+        /* -----------------------------------------------------------
+           13. CONFETTI ANIMATION ENGINE
+           ----------------------------------------------------------- */
+        let confettiFrame = null;
+        let confettiParticles = [];
+
+        function startConfetti() {
+            const canvas = document.getElementById('confettiCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const colors = ['#F59E0B', '#06B6D4', '#10B981', '#EC4899', '#3B82F6', '#FDE047'];
+            confettiParticles = Array.from({ length: 110 }, () => ({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height - canvas.height,
+                w: Math.random() * 10 + 6,
+                h: Math.random() * 6 + 4,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                vy: Math.random() * 3 + 2,
+                vx: Math.random() * 2 - 1,
+                angle: Math.random() * 360,
+                vAngle: Math.random() * 6 - 3
+            }));
+
+            function renderLoop() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                confettiParticles.forEach(p => {
+                    p.y += p.vy;
+                    p.x += p.vx;
+                    p.angle += p.vAngle;
+                    if (p.y > canvas.height) {
+                        p.y = -15;
+                        p.x = Math.random() * canvas.width;
+                    }
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate((p.angle * Math.PI) / 180);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+                    ctx.restore();
+                });
+                confettiFrame = requestAnimationFrame(renderLoop);
+            }
+            renderLoop();
+        }
+
+        function stopConfetti() {
+            if (confettiFrame) {
+                cancelAnimationFrame(confettiFrame);
+                confettiFrame = null;
+            }
+            const canvas = document.getElementById('confettiCanvas');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+
+        window.addEventListener('resize', () => {
+            const canvas = document.getElementById('confettiCanvas');
+            if (canvas) {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+        });
+
+        // Initialize Setup Screen on Load
+        window.onload = function () {
+            setTeamCount(2);
+        };
+    </script>
+</body>
+</html>
